@@ -219,7 +219,7 @@ pub fn span_to_snippet(crate_data: &TranslatedCrate, span: &Span) -> Result<Vec<
     let content: Vec<String> = content.lines().map(|s| s.to_string()).collect();
     // This is not meant to be efficient
     let mut lines: Vec<_> = Vec::from(&content[span.span.beg.line - 1..span.span.end.line - 1]);
-    if lines.len() <= 0 {
+    if lines.is_empty() {
         return Err(());
     }
     // Shift the columns

@@ -38,6 +38,7 @@ impl Default for RudraConfig {
 
 /// Returns the "default sysroot" that Rudra will use if no `--sysroot` flag is set.
 /// Should be a compile-time constant.
+#[allow(clippy::option_env_unwrap)]
 pub fn compile_time_sysroot() -> Option<String> {
     // option_env! is replaced to a constant at compile time
     if option_env!("RUSTC_STAGE").is_some() {
