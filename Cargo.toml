@@ -33,3 +33,6 @@ path = "src/main.rs"
 
 [dev-dependencies]
 prefer-dynamic = { version = "0", features = ["link-test"] } # for dynamic linking
+
+[features]
+backtraces = []
