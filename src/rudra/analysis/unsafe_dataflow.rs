@@ -167,11 +167,7 @@ mod inner {
             } else {
                 return None;
             };
-            let body = if let Some(body) = rcx.crate_data.bodies.get(body_id) {
-                body
-            } else {
-                return None;
-            };
+            let body = rcx.crate_data.bodies.get(body_id)?;
 
             if path_discovery_set
                 .contains(rcx, &decl.item_meta.name)
@@ -393,18 +389,15 @@ mod inner {
         warn!("Paths discovery function has been detected");
         for block in &body.as_unstructured().unwrap().body {
             for st in &block.statements {
-                match &st.content {
-                    RawStatement::Call(Call {
+                if let RawStatement::Call(Call {
                         func:
                             FnOperand::Regular(FnPtr {
                                 func: FunIdOrTraitMethodRef::Fun(FunId::Regular(id)),
                                 ..
                             }),
                         ..
-                    }) => {
-                        println!("{}", rcx.crate_data.into_fmt().format_object(*id));
-                    }
-                    _ => (),
+                    }) = &st.content {
+                    println!("{}", rcx.crate_data.into_fmt().format_object(*id));
                 }
             }
         }

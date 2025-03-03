@@ -75,9 +75,9 @@ trait IntoReportLevel {
     fn report_level(&self) -> ReportLevel;
 }
 
-impl Into<Cow<'static, str>> for AnalysisKind {
-    fn into(self) -> Cow<'static, str> {
-        match &self {
+impl From<AnalysisKind> for Cow<'static, str> {
+    fn from(val: AnalysisKind) -> Self {
+        match &val {
             AnalysisKind::UnsafeDestructor => "UnsafeDestructor".into(),
             AnalysisKind::SendSyncVariance(sv_analyses) => {
                 let mut v = vec!["SendSyncVariance:"];

@@ -15,11 +15,11 @@ pub struct LocalTraitIter {
 impl LocalTraitIter {
     pub fn new(ctx: &CtxOwner, trait_def_id: TraitDeclId) -> Self {
         // We do something
-        let impl_id_vec = ctx
+        let impl_id_vec: Vec<_> = ctx
             .trait_impl_map
             .get(&trait_def_id)
             .map(|s| s.iter().cloned().collect())
-            .unwrap_or(Vec::new());
+            .unwrap_or_default();
         LocalTraitIter {
             inner: impl_id_vec.into_iter(),
         }

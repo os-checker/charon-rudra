@@ -134,7 +134,7 @@ impl<'tcx> ColorSpan<'tcx> {
             col: span.span.end.col,
             id: event_id,
         });
-        return true;
+        true
     }
 
     pub fn to_colored_string(&self) -> String {
@@ -144,7 +144,7 @@ impl<'tcx> ColorSpan<'tcx> {
 
         let mut buffer = Buffer::ansi();
 
-        if let Ok(snippet) = span_to_snippet(&self.crate_data, &self.main_span) {
+        if let Ok(snippet) = span_to_snippet(self.crate_data, &self.main_span) {
             let start_loc = self.main_span.span.beg;
             let end_loc = self.main_span.span.end;
 
@@ -188,7 +188,7 @@ impl<'tcx> ColorSpan<'tcx> {
 
                 // Handle reset
                 handle_color_event(&mut buffer, current_col);
-                write!(buffer, "\n").ok();
+                writeln!(buffer).ok();
             }
 
             // Reset the color after printing the span just in case
