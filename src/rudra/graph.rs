@@ -73,6 +73,7 @@ impl<'a, G: Graph, T: GraphTaint> TaintAnalyzer<'a, G, T> {
     }
 
     // Checks reachability between `self.sources` & `self.sinks`.
+    #[allow(clippy::needless_range_loop)]
     pub fn propagate(&self) -> T {
         let mut taint_state = vec![T::default(); self.len];
         let mut work_list = VecDeque::new();
@@ -189,8 +190,7 @@ impl<'a, G: Graph> Scc<'a, G> {
         }
 
         // remove duplicated edges
-        for group in 0..num_group {
-            let edges = &mut group_graph[group];
+        for edges in group_graph.iter_mut().take(num_group) {
             edges.sort();
             edges.dedup();
         }

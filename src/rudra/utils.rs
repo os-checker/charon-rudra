@@ -204,6 +204,7 @@ impl<'tcx> ColorSpan<'tcx> {
     }
 }
 
+#[allow(clippy::to_string_trait_impl)]
 impl<'tcx> ToString for ColorSpan<'tcx> {
     fn to_string(&self) -> String {
         span_to_string(self.crate_data, &self.main_span)

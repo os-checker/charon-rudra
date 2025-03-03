@@ -1,3 +1,4 @@
+#![allow(clippy::unsafe_removed_from_name)]
 use crate::rudra::context::CtxOwner;
 use charon_lib::ast::names::Name;
 use charon_lib::name_matcher::Pattern;
