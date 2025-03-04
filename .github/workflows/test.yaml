@@ -20,4 +20,4 @@ jobs:
       - name: Run tests
         run: sh test.sh
       - name: Run all tests
-        run: cargo test --test diagnostics
+        run: cargo test --test diagnostics -- --color=always --nocapture
