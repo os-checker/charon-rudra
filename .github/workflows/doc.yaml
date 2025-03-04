@@ -21,7 +21,7 @@ jobs:
           mkdir doc
           cd charon/charon
           make doc
-          mv charon/charon/target/doc ../../doc/charon
+          mv target/doc ../../doc/charon
 
       - name: Build charon-rudra docs
         run: |
