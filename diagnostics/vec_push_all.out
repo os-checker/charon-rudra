@@ -1,0 +1,14 @@
+Error (UnsafeDataflow:/WriteFlow/VecSetLen): Potential unsafe dataflow issue in `vec_push_all::{vec_push_all::MyVec<T>[@TraitClause0]}::push_all`
+-> tests/panic_safety/vec_push_all.rs:12:4-23:5
+fn push_all(&mut self, to_push: &[T]) {
+        [0m[36mself.0.reserve([0m[36mto_push.len()[0m[36m)[0m;
+        unsafe {
+            // can't overflow because we just reserved this
+            [0m[31mself.0.set_len([0m[36mself.0.len()[0m[31m + [0m[36mto_push.len()[0m[31m)[0m;
+
+            for (i, x) in [0m[36m[0m[36m[0m[36m[0m[36mto_push.iter()[0m[36m.enumerate()[0m[36m[0m[36m[0m {
+                // Clone might panic
+                [0m[33m[0m[36m[0m[36mself.0.as_mut_ptr()[0m[36m.offset(i as isize)[0m[33m.write([0m[36mx.clone()[0m[33m)[0m;
+            }
+        }
+[0m

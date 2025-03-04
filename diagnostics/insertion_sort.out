@@ -1,0 +1,15 @@
+Warning (UnsafeDataflow:/ReadFlow/CopyFlow/WriteFlow): Potential unsafe dataflow issue in `insertion_sort::insertion_sort_unsafe`
+-> tests/panic_safety/insertion_sort.rs:10:0-22:1
+fn insertion_sort_unsafe<T: Ord>(arr: &mut [T]) {
+    unsafe {
+        for i in [0m[36m[0m[36m1..[0m[36marr.len()[0m[36m[0m[36m[0m {
+            let item = [0m[31mptr::read(&arr[i])[0m;
+            let mut j = i - 1;
+            while j >= 0 && [0m[36marr[j] > item[0m {
+                j = j - 1;
+            }
+            [0m[31mptr::copy(&mut arr[j + 1], &mut arr[j + 2], i - j - 1)[0m;
+            [0m[33mptr::write(&mut arr[j + 1], item)[0m;
+        }
+    }
+[0m

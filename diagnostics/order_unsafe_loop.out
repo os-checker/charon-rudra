@@ -1,0 +1,11 @@
+Warning (UnsafeDataflow:/ReadFlow): Potential unsafe dataflow issue in `order_unsafe_loop::test_order_unsafe_loop`
+-> tests/panic_safety/order_unsafe_loop.rs:10:0-18:1
+fn test_order_unsafe_loop<I: Iterator<Item = impl Debug>>(mut iter: I) {
+    // Non-Copy type
+    let non_copy = Box::new(1234);
+    for item in [0m[36m[0m[36miter[0m[36m[0m {
+        unsafe {
+            [0m[31mstd::ptr::read(&non_copy)[0m;
+        }
+    }
+[0m

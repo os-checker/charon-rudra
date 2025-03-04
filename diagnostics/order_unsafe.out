@@ -1,0 +1,8 @@
+Warning (UnsafeDataflow:/ReadFlow): Potential unsafe dataflow issue in `order_unsafe::test_order_unsafe`
+-> tests/panic_safety/order_unsafe.rs:10:0-15:1
+fn test_order_unsafe<I: Iterator<Item = impl Debug>>(mut iter: I) {
+    unsafe {
+        [0m[31mstd::ptr::read(&Box::new(1234) as *const _)[0m;
+    }
+    println!("[0m[36m{:?}[0m", [0m[36miter.next()[0m);
+[0m

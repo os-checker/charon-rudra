@@ -1,0 +1,24 @@
+Warning (UnsafeDataflow:/ReadFlow): Potential unsafe dataflow issue in `copy_filter::test_copy2`
+-> tests/unsafe_destructor/copy_filter.rs:18:0-27:1
+pub fn test_copy2<F, T>(f: F)
+where
+    F: FnOnce(),
+    T: Copy,
+{
+    unsafe {
+        [0m[31mcore::ptr::read(0x1234 as *const T)[0m;
+    }
+    [0m[36mf()[0m;
+[0m
+Warning (UnsafeDataflow:/ReadFlow): Potential unsafe dataflow issue in `copy_filter::test_copy3`
+-> tests/unsafe_destructor/copy_filter.rs:29:0-38:1
+pub fn test_copy3<F, T, U>(f: F)
+where
+    F: FnOnce(),
+    U: Copy,
+{
+    unsafe {
+        [0m[31mcore::ptr::read(0x1234 as *const T as *const U)[0m;
+    }
+    [0m[36mf()[0m;
+[0m
