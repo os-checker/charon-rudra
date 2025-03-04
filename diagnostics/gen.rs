@@ -24,6 +24,7 @@ fn gen() -> Result<()> {
             }
         }
     }
+    tests.sort();
 
     expect_file!["tests.txt"].assert_debug_eq(&tests);
 
