@@ -14,7 +14,9 @@ jobs:
         with:
           submodules: true
       - name: Set up toolchain
-        run: rustup install -c rustc-dev,llvm-tools-preview && rustup default nightly-2024-08-11
+        run: |
+          rustup install nightly-2024-08-11 --compoent rustc-dev,llvm-tools-preview
+          rustup default nightly-2024-08-11
       - uses: Swatinem/rust-cache@v2
 
       - name: Run tests
