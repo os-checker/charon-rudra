@@ -4,6 +4,9 @@ on:
   push:
     # branches: [ main ]
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   # Build job
   build:
@@ -14,20 +17,20 @@ jobs:
         with:
           submodules: true
       - name: Build charon docs
-        env:
-          CARGO_TERM_COLOR: always
         id: build
         run: |
           mkdir doc
           cd charon/charon
           make doc
           mv target/doc ../../doc/charon
+          # deployed at https://os-checker.github.io/charon-rudra/charon/charon/
 
       - name: Build charon-rudra docs
         run: |
           cargo doc --document-private-items --no-deps
           mv target/doc doc/charon-rudra
           ls -alh doc
+          # deployed at https://os-checker.github.io/charon-rudra/charon-rudra/cargo_charon_rudra/
 
       - name: Upload static files as artifact
         id: deployment
