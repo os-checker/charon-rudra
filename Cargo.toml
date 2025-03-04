@@ -2,6 +2,13 @@
 name = "charon-rudra"
 version = "0.1.0"
 edition = "2021"
+autotests = false
+
+[[test]]
+name = "diagnostics"
+path = "diagnostics/gen.rs"
+test = true
+harness = true
 
 [dependencies]
 anyhow = "1.0.89"
@@ -34,7 +41,8 @@ name = "cargo-charon-rudra"
 path = "src/main.rs"
 
 [dev-dependencies]
-prefer-dynamic = { version = "0", features = ["link-test"] } # for dynamic linking
+# prefer-dynamic = { version = "0.1.2", features = ["link-test"] } # for dynamic linking
+expect-test = "1.5"
 
 [features]
 backtraces = []
