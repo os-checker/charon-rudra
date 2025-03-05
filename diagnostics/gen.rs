@@ -48,7 +48,7 @@ fn gen() -> Result<()> {
 
     println!("\n\n\n");
     for (test, output) in &outputs {
-        println!("{test}:\n{output}");
+        println!("\x1B[42m\x1B[30m{test}:\x1B[0m\n{output}");
     }
 
     Ok(())
