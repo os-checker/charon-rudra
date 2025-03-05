@@ -1,8 +1,6 @@
-CHARON=(which charon)
-
-# 检查文件是否存在且具有可执行权限
-if [ -x "$CHARON" ]; then
-  echo "$CHARON exists, so skip installation"
+# Check if charon exists
+if [ -x "$(which charon)" ]; then
+  echo "charon exists, so skip installation"
 else
   cd charon/charon
   # Install charon / charon-driver / generate-ml
