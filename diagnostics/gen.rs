@@ -48,7 +48,10 @@ fn gen() -> Result<()> {
 
     println!("\n\n\n");
     for (test, output) in &outputs {
-        println!("\x1B[42m\x1B[30m{test}:\x1B[0m\n{output}");
+        let content = std::fs::read_to_string(test)
+            .with_whatever_context(|_| format!("Failed to read the content of {test}"))?;
+        let meta = parse_meta(&content)?;
+        println!("\x1B[42m\x1B[30m{test} | {meta:?}:\x1B[0m\n{output}");
     }
 
     Ok(())
@@ -93,4 +96,32 @@ fn analyze(file_stem: &str) -> Result<String> {
             let ullbc = ullbc_file(file_stem);
             format!("Failed to run `cargo-charon-rudra --file {ullbc}`")
         })
+}
+
+// /*!
+// ```rudra-test
+// test_type = "normal"
+// expected_analyzers = ["SendSyncVariance"]
+// ```
+// !*/
+fn parse_meta(content: &str) -> Result<Meta> {
+    const HEAD: &str = "rudra-test";
+    const TAIL: &str = "```\n";
+
+    let pos = |s: &str| {
+        content
+            .find(s)
+            .with_whatever_context(|| format!("{s:?} is not found in {content:?}"))
+    };
+    let pos_head = pos(HEAD)? + HEAD.len();
+    let pos_tail = pos(TAIL)?;
+    toml::from_str(&content[pos_head..pos_tail])
+        .with_whatever_context(|_| "Failed to parse as Meta from the test")
+}
+
+#[allow(dead_code)]
+#[derive(Debug, serde::Deserialize)]
+struct Meta {
+    test_type: String,
+    expected_analyzers: Vec<String>,
 }

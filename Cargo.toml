@@ -45,6 +45,7 @@ prefer-dynamic = "0" # for dynamic linking
 expect-test = "1.5"
 walkdir = "2.5.0"
 duct = "0.13.7"
+toml = "0.8.20"
 
 [features]
 backtraces = []
