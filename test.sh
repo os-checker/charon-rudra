@@ -1,8 +1,15 @@
-cd charon/charon
-# Install charon / charon-driver / generate-ml
-cargo install --path . --locked
+CHARON=(which charon)
 
-cd ../..
+# 检查文件是否存在且具有可执行权限
+if [ -x "$CHARON" ]; then
+  echo "$CHARON exists, so skip installation"
+else
+  cd charon/charon
+  # Install charon / charon-driver / generate-ml
+  cargo install --path . --locked
+  cd ../..
+fi
+
 # Install cargo-charon-rudra
 cargo install --path . --locked
 
