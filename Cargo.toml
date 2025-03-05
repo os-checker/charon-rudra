@@ -48,6 +48,3 @@ duct = "0.13.7"
 
 [features]
 backtraces = []
-
-[workspace]
-members = ["./charon/charon/", "./charon/charon/macros/"]
