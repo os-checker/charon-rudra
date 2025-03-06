@@ -13,3 +13,6 @@
 [submodule "tests-crates/claxon"]
 	path = tests-crates/claxon
 	url = https://github.com/ruuda/claxon
+[submodule "tests-crates/rust-stackvector"]
+	path = tests-crates/rust-stackvector
+	url = https://github.com/Alexhuszagh/rust-stackvector
