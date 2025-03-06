@@ -7,3 +7,6 @@
 [submodule "tests-crates/rust-smallvec"]
 	path = tests-crates/rust-smallvec
 	url = https://github.com/servo/rust-smallvec
+[submodule "tests-crates/ash"]
+	path = tests-crates/ash
+	url = https://github.com/ash-rs/ash
