@@ -23,7 +23,7 @@ use std::io::BufReader;
 
 fn main() {
     // Initialize the logger
-    rudra::log::setup_logging(rudra::log::Verbosity::Normal).expect("Rudra failed to initialize");
+    rudra::log::setup_logging().expect("Rudra failed to initialize");
 
     // Initialize the report logger
     let _report_logger = rudra::report::init_report_logger(rudra::report::default_report_logger());

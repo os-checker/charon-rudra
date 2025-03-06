@@ -7,8 +7,8 @@ use crate::rudra::analysis::{
 use crate::rudra::context::CtxOwner;
 use charon_lib::ast::TranslatedCrate;
 
-use crate::rudra::log::Verbosity;
 use crate::rudra::report::ReportLevel;
+use log::LevelFilter;
 
 // // Insert rustc arguments at the beginning of the argument list that Rudra wants to be
 // // set per default, for maximal validation power.
@@ -18,7 +18,7 @@ use crate::rudra::report::ReportLevel;
 #[derive(Debug, Clone, Copy)]
 #[allow(dead_code)]
 pub struct RudraConfig {
-    pub verbosity: Verbosity,
+    pub verbosity: LevelFilter,
     pub report_level: ReportLevel,
     pub unsafe_destructor_enabled: bool,
     pub send_sync_variance_enabled: bool,
@@ -28,7 +28,7 @@ pub struct RudraConfig {
 impl Default for RudraConfig {
     fn default() -> Self {
         RudraConfig {
-            verbosity: Verbosity::Normal,
+            verbosity: LevelFilter::Info,
             //verbosity: Verbosity::Trace,
             report_level: ReportLevel::Info,
             unsafe_destructor_enabled: false,

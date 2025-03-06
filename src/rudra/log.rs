@@ -3,23 +3,16 @@ use std::io;
 
 use log::LevelFilter;
 
-#[derive(Debug, Clone, Copy)]
-#[allow(dead_code)]
-pub enum Verbosity {
-    Normal,
-    Verbose,
-    Trace,
-}
+pub fn setup_logging() -> Result<(), fern::InitError> {
+    // Default level as LOG=info, but LOG env var can be set to override
+    let level = std::env::var("LOG")
+        .ok()
+        .and_then(|log| log.parse().ok())
+        .unwrap_or(LevelFilter::Info);
 
-pub fn setup_logging(verbosity: Verbosity) -> Result<(), fern::InitError> {
     let mut base_config = fern::Dispatch::new();
 
-    base_config = match verbosity {
-        Verbosity::Normal => base_config.level(LevelFilter::Info),
-        Verbosity::Verbose => base_config.level(LevelFilter::Debug),
-        Verbosity::Trace => base_config.level(LevelFilter::Trace),
-    }
-    .level_for(
+    base_config = base_config.level(level).level_for(
         // log >= debug on debug build and >= info on release build
         "rudra-progress",
         if cfg!(debug_assertions) {
