@@ -19,3 +19,6 @@
 [submodule "tests-crates/gfx"]
 	path = tests-crates/gfx
 	url = https://github.com/gfx-rs/gfx
+[submodule "tests-crates/Rudra"]
+	path = tests-crates/Rudra
+	url = https://github.com/sslab-gatech/Rudra
