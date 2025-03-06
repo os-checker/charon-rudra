@@ -8,7 +8,7 @@ env:
   FORCE_COLOR: 1
 
 jobs:
-  run-tests:
+  analyze:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -29,10 +29,17 @@ jobs:
             ./charon/charon -> target
             ./tests-crates/${{ matrix.crate }} -> target
 
-      - name: Install
+      - name: Install charon & cargo-charon-rudra
         run: sh test.sh
-      - name: Run all tests
+
+      - name: Generate crate.ullbc
         working-directory: tests-crates/${{ matrix.crate }}
-        run: |
-          charon --ullbc --no-merge-goto-chains --dest-file crate.ullbc
-          LOG=trace cargo-charon-rudra --file crate.ullbc
+        run: charon --ullbc --no-merge-goto-chains --dest-file crate.ullbc
+
+      - name: Analyze
+        working-directory: tests-crates/${{ matrix.crate }}
+        run: cargo-charon-rudra --file crate.ullbc
+
+      - name: Analyze (LOG=trace)
+        working-directory: tests-crates/${{ matrix.crate }}
+        run: LOG=trace cargo-charon-rudra --file crate.ullbc
