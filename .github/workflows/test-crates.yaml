@@ -28,6 +28,7 @@ jobs:
             . -> target
             ./charon/charon -> target
             ./tests-crates/${{ matrix.crate }} -> target
+            ./tests-crates/Rudra -> target
 
       - name: Install charon & cargo-charon-rudra
         run: sh test.sh
@@ -43,6 +44,14 @@ jobs:
       - name: Analyze (LOG=trace)
         working-directory: tests-crates/${{ matrix.crate }}
         run: LOG=trace cargo-charon-rudra --file crate.ullbc
+
+      - name: Install Rudra
+        working-directory: tests-crates/Rudra
+        run: cargo install --path .
+
+      - name: Analyze with Rudra
+        working-directory: tests-crates/${{ matrix.crate }}
+        run: cargo +nightly-2021-10-21 rudra
 
   analyze-ash:
     runs-on: ubuntu-latest
@@ -60,6 +69,7 @@ jobs:
             . -> target
             ./charon/charon -> target
             ./tests-crates/ash -> target
+            ./tests-crates/Rudra -> target
 
       - name: Install charon & cargo-charon-rudra
         run: sh test.sh
@@ -75,6 +85,14 @@ jobs:
       - name: Analyze (LOG=trace)
         working-directory: tests-crates/ash
         run: LOG=trace cargo-charon-rudra --file crate.ullbc
+
+      - name: Install Rudra
+        working-directory: tests-crates/Rudra
+        run: cargo install --path .
+
+      - name: Analyze with Rudra
+        working-directory: tests-crates/ash/ash
+        run: cargo +nightly-2021-10-21 rudra
 
   analyze-gfx:
     runs-on: ubuntu-latest
@@ -92,6 +110,7 @@ jobs:
             . -> target
             ./charon/charon -> target
             ./tests-crates/gfx -> target
+            ./tests-crates/Rudra -> target
 
       - name: Install charon & cargo-charon-rudra
         run: sh test.sh
@@ -111,3 +130,11 @@ jobs:
       - name: Analyze (LOG=trace)
         working-directory: tests-crates/gfx
         run: LOG=trace cargo-charon-rudra --file crate.ullbc
+
+      - name: Install Rudra
+        working-directory: tests-crates/Rudra
+        run: cargo install --path .
+
+      - name: Analyze with Rudra
+        working-directory: tests-crates/gfx/src/auxil/auxil
+        run: cargo +nightly-2021-10-21 rudra
