@@ -47,7 +47,7 @@ jobs:
 
       - name: Install Rudra
         working-directory: tests-crates/Rudra
-        run: cargo install --path .
+        run: cargo install --path . --locked
 
       - name: Analyze with Rudra
         working-directory: tests-crates/${{ matrix.crate }}
@@ -88,7 +88,7 @@ jobs:
 
       - name: Install Rudra
         working-directory: tests-crates/Rudra
-        run: cargo install --path .
+        run: cargo install --path . --locked
 
       - name: Analyze with Rudra
         working-directory: tests-crates/ash/ash
@@ -133,7 +133,7 @@ jobs:
 
       - name: Install Rudra
         working-directory: tests-crates/Rudra
-        run: cargo install --path .
+        run: cargo install --path . --locked
 
       - name: Analyze with Rudra
         working-directory: tests-crates/gfx/src/auxil/auxil
