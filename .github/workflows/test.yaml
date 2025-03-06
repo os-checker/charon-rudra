@@ -19,6 +19,10 @@ jobs:
           rustup default nightly-2024-08-11
           rustup component add rustc-dev llvm-tools-preview
       - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            . -> target
+            ./charon/charon -> target
 
       - name: Run tests
         run: sh test.sh
