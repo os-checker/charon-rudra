@@ -1,0 +1,38 @@
+name: Analyze Crates
+
+on:
+  push:
+
+env:
+  CARGO_TERM_COLOR: always
+  FORCE_COLOR: 1
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        crate: [ash, claxon, gfx, rust-smallvec, rust-stackvector, slice_deque]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up toolchain
+        run: |
+          rustup default nightly-2024-08-11
+          rustup component add rustc-dev llvm-tools-preview
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            . -> target
+            ./charon/charon -> target
+            ./tests-crates/${{ matrix.crate }} -> target
+
+      - name: Install
+        run: sh test.sh
+      - name: Run all tests
+        working-directory: tests-crates/${{ matrix.crate }}
+        run: |
+          charon --ullbc --no-merge-goto-chains --dest-file crate.ullbc
+          LOG=trace cargo-charon-rudra --file crate.ullbc
