@@ -9,7 +9,7 @@ use charon_lib::ast::TranslatedCrate;
 use termcolor::{Buffer, Color, ColorSpec, WriteColor};
 use tracing::warn;
 
-use crate::rudra::lib::compile_time_sysroot;
+// use crate::rudra::lib::compile_time_sysroot;
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 struct ColorEventId(usize);
@@ -107,9 +107,9 @@ impl<'tcx> ColorSpan<'tcx> {
         })
     }
 
-    pub fn main_span(&self) -> Span {
-        self.main_span
-    }
+    // pub fn main_span(&self) -> Span {
+    //     self.main_span
+    // }
 
     /// Returns true if span is successfully added
     pub fn add_sub_span(&mut self, color: Color, span: Span) -> bool {
@@ -223,7 +223,7 @@ pub fn span_to_snippet(crate_data: &TranslatedCrate, span: &Span) -> Result<Vec<
         return Err(());
     }
     // Shift the columns
-    let lines_len = lines.len();
+    // let lines_len = lines.len();
     use take_mut::take;
     take(&mut lines[0], |l| {
         l.chars().skip(span.span.beg.col).collect()
@@ -235,10 +235,10 @@ pub fn span_to_snippet(crate_data: &TranslatedCrate, span: &Span) -> Result<Vec<
     Ok(lines)
 }
 
-pub fn print_span(crate_data: &TranslatedCrate, span: &Span) {
-    let snippet = span_to_snippet(crate_data, span).unwrap().join("\n");
-    eprintln!("{:?}\n{}\n", span, snippet);
-}
+// pub fn print_span(crate_data: &TranslatedCrate, span: &Span) {
+//     let snippet = span_to_snippet(crate_data, span).unwrap().join("\n");
+//     eprintln!("{:?}\n{}\n", span, snippet);
+// }
 
 pub fn span_to_string(crate_data: &TranslatedCrate, span: &Span) -> String {
     let file = &crate_data.id_to_file[span.span.file_id];
@@ -254,13 +254,13 @@ pub fn span_to_string(crate_data: &TranslatedCrate, span: &Span) -> String {
     .to_string()
 }
 
-pub fn print_span_to_file(crate_data: &TranslatedCrate, span: &Span, output_name: &str) {
-    let sysroot = compile_time_sysroot().expect("Failed to fetch sysroot");
-    let filename = format!("{}/logs/{}", sysroot, output_name);
-    let snippet = span_to_snippet(crate_data, span).unwrap().join("\n");
-    let content = format!("{}\n{}\n", span_to_string(crate_data, span), snippet);
-    std::fs::write(filename, content).expect("Unable to write file");
-}
+// pub fn print_span_to_file(crate_data: &TranslatedCrate, span: &Span, output_name: &str) {
+//     let sysroot = compile_time_sysroot().expect("Failed to fetch sysroot");
+//     let filename = format!("{}/logs/{}", sysroot, output_name);
+//     let snippet = span_to_snippet(crate_data, span).unwrap().join("\n");
+//     let content = format!("{}\n{}\n", span_to_string(crate_data, span), snippet);
+//     std::fs::write(filename, content).expect("Unable to write file");
+// }
 
 /*pub fn print_mir<'tcx>(tcx: TyCtxt<'tcx>, instance: Instance<'tcx>) {
     info!("Printing MIR for {:?}", instance);

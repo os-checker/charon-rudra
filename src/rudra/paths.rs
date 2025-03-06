@@ -98,8 +98,8 @@ impl PathSet {
 }
 
 /// Special path used only for path discovery
-pub static SPECIAL_PATH_DISCOVERY: Lazy<PathSet> =
-    Lazy::new(move || PathSet::new(&[&["rudra_paths_discovery", "PathsDiscovery", "discover"]]));
+// pub static SPECIAL_PATH_DISCOVERY: Lazy<PathSet> =
+//     Lazy::new(move || PathSet::new(&[&["rudra_paths_discovery", "PathsDiscovery", "discover"]]));
 
 pub static STRONG_LIFETIME_BYPASS_LIST: Lazy<PathSet> = Lazy::new(move || {
     PathSet::new(&[

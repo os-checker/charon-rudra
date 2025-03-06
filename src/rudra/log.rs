@@ -4,6 +4,7 @@ use std::io;
 use log::LevelFilter;
 
 #[derive(Debug, Clone, Copy)]
+#[allow(dead_code)]
 pub enum Verbosity {
     Normal,
     Verbose,

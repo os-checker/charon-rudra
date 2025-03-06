@@ -5,16 +5,18 @@ use crate::rudra::analysis::{
     //UnsafeDestructorChecker,
 };
 use crate::rudra::context::CtxOwner;
-use crate::rudra::log::Verbosity;
-use crate::rudra::report::ReportLevel;
 use charon_lib::ast::TranslatedCrate;
 
-// Insert rustc arguments at the beginning of the argument list that Rudra wants to be
-// set per default, for maximal validation power.
-pub static RUDRA_DEFAULT_ARGS: &[&str] =
-    &["-Zalways-encode-mir", "-Zmir-opt-level=0", "--cfg=rudra"];
+use crate::rudra::log::Verbosity;
+use crate::rudra::report::ReportLevel;
+
+// // Insert rustc arguments at the beginning of the argument list that Rudra wants to be
+// // set per default, for maximal validation power.
+// pub static RUDRA_DEFAULT_ARGS: &[&str] =
+//     &["-Zalways-encode-mir", "-Zmir-opt-level=0", "--cfg=rudra"];
 
 #[derive(Debug, Clone, Copy)]
+#[allow(dead_code)]
 pub struct RudraConfig {
     pub verbosity: Verbosity,
     pub report_level: ReportLevel,
@@ -36,30 +38,30 @@ impl Default for RudraConfig {
     }
 }
 
-/// Returns the "default sysroot" that Rudra will use if no `--sysroot` flag is set.
-/// Should be a compile-time constant.
-#[allow(clippy::option_env_unwrap)]
-pub fn compile_time_sysroot() -> Option<String> {
-    // option_env! is replaced to a constant at compile time
-    if option_env!("RUSTC_STAGE").is_some() {
-        // This is being built as part of rustc, and gets shipped with rustup.
-        // We can rely on the sysroot computation in librustc.
-        return None;
-    }
-
-    // For builds outside rustc, we need to ensure that we got a sysroot
-    // that gets used as a default. The sysroot computation in librustc would
-    // end up somewhere in the build dir.
-    // Taken from PR <https://github.com/Manishearth/rust-clippy/pull/911>.
-    let home = option_env!("RUSTUP_HOME").or(option_env!("MULTIRUST_HOME"));
-    let toolchain = option_env!("RUSTUP_TOOLCHAIN").or(option_env!("MULTIRUST_TOOLCHAIN"));
-    Some(match (home, toolchain) {
-        (Some(home), Some(toolchain)) => format!("{}/toolchains/{}", home, toolchain),
-        _ => option_env!("RUST_SYSROOT")
-            .expect("To build Rudra without rustup, set the `RUST_SYSROOT` env var at build time")
-            .to_owned(),
-    })
-}
+// /// Returns the "default sysroot" that Rudra will use if no `--sysroot` flag is set.
+// /// Should be a compile-time constant.
+// #[allow(clippy::option_env_unwrap)]
+// pub fn compile_time_sysroot() -> Option<String> {
+//     // option_env! is replaced to a constant at compile time
+//     if option_env!("RUSTC_STAGE").is_some() {
+//         // This is being built as part of rustc, and gets shipped with rustup.
+//         // We can rely on the sysroot computation in librustc.
+//         return None;
+//     }
+//
+//     // For builds outside rustc, we need to ensure that we got a sysroot
+//     // that gets used as a default. The sysroot computation in librustc would
+//     // end up somewhere in the build dir.
+//     // Taken from PR <https://github.com/Manishearth/rust-clippy/pull/911>.
+//     let home = option_env!("RUSTUP_HOME").or(option_env!("MULTIRUST_HOME"));
+//     let toolchain = option_env!("RUSTUP_TOOLCHAIN").or(option_env!("MULTIRUST_TOOLCHAIN"));
+//     Some(match (home, toolchain) {
+//         (Some(home), Some(toolchain)) => format!("{}/toolchains/{}", home, toolchain),
+//         _ => option_env!("RUST_SYSROOT")
+//             .expect("To build Rudra without rustup, set the `RUST_SYSROOT` env var at build time")
+//             .to_owned(),
+//     })
+// }
 
 fn run_analysis<F, R>(name: &str, f: F) -> R
 where

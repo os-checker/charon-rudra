@@ -223,6 +223,7 @@ use std::collections::{HashMap, HashSet};
 pub struct CtxOwner {
     pub crate_data: TranslatedCrate,
     /// The map from trait decl ids to trait impls
+    #[allow(dead_code)]
     pub trait_impl_map: HashMap<TraitDeclId, HashSet<TraitImplId>>,
     /// The set of type ids for which the Copy trait is implemented - note
     /// that we forget about the precise constraints (this is a first approximation).

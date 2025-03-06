@@ -4,14 +4,14 @@ use rustc_middle::ty::{Instance, ParamEnv, TyKind};
 use rustc_span::{Span, DUMMY_SP};*/
 
 use crate::rudra::context::RudraCtxt;
-use snafu::{Backtrace, Snafu};
+// use snafu::{Backtrace, Snafu};
 use termcolor::Color;
 
 //use crate::prelude::*;
 use crate::rudra::graph::GraphTaint;
 use crate::rudra::report::rudra_report;
 use crate::rudra::{
-    analysis::{AnalysisError, AnalysisErrorKind, AnalysisKind, IntoReportLevel},
+    analysis::{AnalysisKind, IntoReportLevel},
     graph::TaintAnalyzer,
     paths::{self, *},
     report::{Report, ReportLevel},
@@ -31,23 +31,23 @@ use charon_lib::ullbc_ast::{
 };
 use tracing::warn;
 
-#[derive(Debug, Snafu)]
-pub enum UnsafeDataflowError {
-    PushPopBlock { backtrace: Backtrace },
-    ResolveError { backtrace: Backtrace },
-    InvalidSpan { backtrace: Backtrace },
-}
-
-impl AnalysisError for UnsafeDataflowError {
-    fn kind(&self) -> AnalysisErrorKind {
-        use UnsafeDataflowError::*;
-        match self {
-            PushPopBlock { .. } => AnalysisErrorKind::Unreachable,
-            ResolveError { .. } => AnalysisErrorKind::OutOfScope,
-            InvalidSpan { .. } => AnalysisErrorKind::Unreachable,
-        }
-    }
-}
+// #[derive(Debug, Snafu)]
+// pub enum UnsafeDataflowError {
+//     PushPopBlock { backtrace: Backtrace },
+//     ResolveError { backtrace: Backtrace },
+//     InvalidSpan { backtrace: Backtrace },
+// }
+//
+// impl AnalysisError for UnsafeDataflowError {
+//     fn kind(&self) -> AnalysisErrorKind {
+//         use UnsafeDataflowError::*;
+//         match self {
+//             PushPopBlock { .. } => AnalysisErrorKind::Unreachable,
+//             ResolveError { .. } => AnalysisErrorKind::OutOfScope,
+//             InvalidSpan { .. } => AnalysisErrorKind::Unreachable,
+//         }
+//     }
+// }
 
 #[derive(Clone, Copy)]
 pub struct UnsafeDataflowChecker<'tcx> {
@@ -387,13 +387,14 @@ mod inner {
         for block in &body.as_unstructured().unwrap().body {
             for st in &block.statements {
                 if let RawStatement::Call(Call {
-                        func:
-                            FnOperand::Regular(FnPtr {
-                                func: FunIdOrTraitMethodRef::Fun(FunId::Regular(id)),
-                                ..
-                            }),
-                        ..
-                    }) = &st.content {
+                    func:
+                        FnOperand::Regular(FnPtr {
+                            func: FunIdOrTraitMethodRef::Fun(FunId::Regular(id)),
+                            ..
+                        }),
+                    ..
+                }) = &st.content
+                {
                     println!("{}", rcx.crate_data.into_fmt().format_object(*id));
                 }
             }
