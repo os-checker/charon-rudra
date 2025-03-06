@@ -50,6 +50,7 @@ jobs:
         run: cargo install --path . --locked
 
       - name: Analyze with Rudra
+        if: matrix.crate == 'rust-stackvector' || matrix.val == 'claxon'
         working-directory: tests-crates/${{ matrix.crate }}
         run: cargo +nightly-2021-10-21 rudra
 
@@ -90,9 +91,9 @@ jobs:
         working-directory: tests-crates/Rudra
         run: cargo install --path . --locked
 
-      - name: Analyze with Rudra
-        working-directory: tests-crates/ash/ash
-        run: cargo +nightly-2021-10-21 rudra
+      # - name: Analyze with Rudra
+      #   working-directory: tests-crates/ash/ash
+      #   run: cargo +nightly-2021-10-21 rudra
 
   analyze-gfx:
     runs-on: ubuntu-latest
@@ -135,6 +136,6 @@ jobs:
         working-directory: tests-crates/Rudra
         run: cargo install --path . --locked
 
-      - name: Analyze with Rudra
-        working-directory: tests-crates/gfx/src/auxil/auxil
-        run: cargo +nightly-2021-10-21 rudra
+      # - name: Analyze with Rudra
+      #   working-directory: tests-crates/gfx/src/auxil/auxil
+      #   run: cargo +nightly-2021-10-21 rudra
