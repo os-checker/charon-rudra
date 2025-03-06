@@ -23,11 +23,10 @@ use rustc_middle::ty::{
 };
 use rustc_span::symbol::sym;*/
 
-use snafu::{OptionExt, Snafu};
 
-use crate::rudra::analysis::{AnalysisKind, IntoReportLevel};
+use crate::rudra::analysis::IntoReportLevel;
 //use crate::prelude::*;
-use crate::rudra::report::{Report, ReportLevel};
+use crate::rudra::report::ReportLevel;
 
 /*
 use behavior::*;

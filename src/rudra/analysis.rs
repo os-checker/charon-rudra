@@ -5,7 +5,6 @@ mod unsafe_dataflow;
 use snafu::{Error, ErrorCompat};
 use tracing::{debug, error, info};
 
-use crate::logger::*;
 use crate::rudra::report::ReportLevel;
 
 pub use send_sync_variance::BehaviorFlag as SendSyncBehaviorFlag;

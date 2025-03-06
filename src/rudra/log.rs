@@ -68,7 +68,6 @@ macro_rules! progress_trace {
         ::log::trace!(target: "rudra-progress", $($arg)+)
     )
 }
-pub(crate) use progress_trace;
 
 #[macro_export]
 macro_rules! progress_debug {
@@ -76,7 +75,6 @@ macro_rules! progress_debug {
         ::log::debug!(target: "rudra-progress", $($arg)+)
     )
 }
-pub(crate) use progress_debug;
 
 #[macro_export]
 macro_rules! progress_info {
@@ -84,7 +82,6 @@ macro_rules! progress_info {
         ::log::info!(target: "rudra-progress", $($arg)+)
     )
 }
-pub(crate) use progress_info;
 
 #[macro_export]
 macro_rules! progress_warn {
@@ -92,7 +89,6 @@ macro_rules! progress_warn {
         ::log::warn!(target: "rudra-progress", $($arg)+)
     )
 }
-pub(crate) use progress_warn;
 
 #[macro_export]
 macro_rules! progress_error {
@@ -100,4 +96,3 @@ macro_rules! progress_error {
         ::log::error!(target: "rudra-progress", $($arg)+)
     )
 }
-pub(crate) use progress_error;

@@ -2,7 +2,7 @@
 #![feature(rustc_private)]
 #![feature(try_blocks)]
 #![feature(never_type)]
-#![allow(unused)]
+// #![allow(unused)]
 
 mod logger;
 mod options;

@@ -1,14 +1,13 @@
 use std::io::Write;
-use std::rc::Rc;
 
 //use rustc_middle::mir::write_mir_pretty;
 //use rustc_middle::ty::{Instance, InstanceDef, TyCtxt};
 //use rustc_span::{CharPos, Span};
 
-use charon_lib::ast::meta::{FileName, Loc, Span};
+use charon_lib::ast::meta::{FileName, Span};
 use charon_lib::ast::TranslatedCrate;
 use termcolor::{Buffer, Color, ColorSpec, WriteColor};
-use tracing::{error, info, warn};
+use tracing::warn;
 
 use crate::rudra::lib::compile_time_sysroot;
 

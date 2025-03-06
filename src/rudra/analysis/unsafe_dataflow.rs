@@ -3,7 +3,7 @@ use rustc_middle::mir::Operand;
 use rustc_middle::ty::{Instance, ParamEnv, TyKind};
 use rustc_span::{Span, DUMMY_SP};*/
 
-use crate::rudra::context::{CtxOwner, RudraCtxt};
+use crate::rudra::context::RudraCtxt;
 use snafu::{Backtrace, Snafu};
 use termcolor::Color;
 
@@ -19,20 +19,17 @@ use crate::rudra::{
     //visitor::ContainsUnsafe,
 };
 use bitflags::bitflags;
-use if_chain::if_chain;
 
-use crate::rudra::macros::unwrap_or;
 use charon_lib::ast::meta::Span;
 use charon_lib::formatter::{Formatter, IntoFormatter};
-use charon_lib::gast::{Body, BodyId, FunDeclId};
-use charon_lib::ids::Vector;
+use charon_lib::gast::{Body, FunDeclId};
 use charon_lib::name_matcher::Pattern;
-use charon_lib::types::{GenericArgs, Ty};
+use charon_lib::types::GenericArgs;
 use charon_lib::ullbc_ast::{
     BodyContents, Call, FnOperand, FnPtr, FunDecl, FunId, FunIdOrTraitMethodRef, Literal, Operand,
     RawConstantExpr, RawStatement, ScalarValue, TraitRefKind,
 };
-use tracing::{error, info, warn};
+use tracing::warn;
 
 #[derive(Debug, Snafu)]
 pub enum UnsafeDataflowError {

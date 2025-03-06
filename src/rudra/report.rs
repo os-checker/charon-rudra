@@ -14,7 +14,6 @@ use serde::Serialize;
 
 use crate::rudra::utils;
 
-use charon_lib::ast::TranslatedCrate;
 
 static REPORT_LOGGER: OnceCell<Box<dyn ReportLogger>> = OnceCell::new();
 
