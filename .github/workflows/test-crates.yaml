@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        crate: [ash, claxon, gfx, rust-smallvec, rust-stackvector, slice_deque]
+        crate: [claxon, rust-smallvec, rust-stackvector, slice_deque]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,4 +42,72 @@ jobs:
 
       - name: Analyze (LOG=trace)
         working-directory: tests-crates/${{ matrix.crate }}
+        run: LOG=trace cargo-charon-rudra --file crate.ullbc
+
+  analyze-ash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up toolchain
+        run: |
+          rustup default nightly-2024-08-11
+          rustup component add rustc-dev llvm-tools-preview
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            . -> target
+            ./charon/charon -> target
+            ./tests-crates/ash -> target
+
+      - name: Install charon & cargo-charon-rudra
+        run: sh test.sh
+
+      - name: Generate crate.ullbc
+        working-directory: tests-crates/ash/ash
+        run: charon --ullbc --no-merge-goto-chains --dest-file crate.ullbc
+
+      - name: Analyze
+        working-directory: tests-crates/ash
+        run: cargo-charon-rudra --file crate.ullbc
+
+      - name: Analyze (LOG=trace)
+        working-directory: tests-crates/ash
+        run: LOG=trace cargo-charon-rudra --file crate.ullbc
+
+  analyze-gfx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up toolchain
+        run: |
+          rustup default nightly-2024-08-11
+          rustup component add rustc-dev llvm-tools-preview
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            . -> target
+            ./charon/charon -> target
+            ./tests-crates/gfx -> target
+
+      - name: Install charon & cargo-charon-rudra
+        run: sh test.sh
+
+      - name: Generate crate.ullbc
+        working-directory: tests-crates/gfx/src/auxil/auxil
+        run: charon --ullbc --no-merge-goto-chains --dest-file crate.ullbc
+
+      - name: View crate.ullbc
+        working-directory: tests-crates/gfx
+        run: ls -alh && cd src/auxil/auxil && ls -alh
+
+      - name: Analyze
+        working-directory: tests-crates/gfx
+        run: cargo-charon-rudra --file crate.ullbc
+
+      - name: Analyze (LOG=trace)
+        working-directory: tests-crates/gfx
         run: LOG=trace cargo-charon-rudra --file crate.ullbc
