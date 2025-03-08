@@ -453,7 +453,7 @@ impl IntoReportLevel for BehaviorFlag {
 
 impl GraphTaint for BehaviorFlag {
     fn is_empty(&self) -> bool {
-        self.is_all()
+        self.is_empty()
     }
 
     fn contains(&self, taint: &Self) -> bool {
