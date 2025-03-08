@@ -330,8 +330,8 @@ mod inner {
                                 // 1. Unresolvable generic code is potentially user-provided
                                 // 2. User-provided code potentially panics
                                 log::trace!(
-                                "Found unresolvable call to trait method: {item_name} (block: {id})"
-                            );
+                                    "Found unresolvable call to trait method: {item_name} (block: {id})"
+                                );
                                 taint_analyzer.mark_sink(id.into());
                                 self.status.unresolvable_generic_functions.push(st.span);
                             }

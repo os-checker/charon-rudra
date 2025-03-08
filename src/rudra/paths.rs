@@ -89,6 +89,7 @@ impl PathSet {
         PathSet { set }
     }
 
+    /// Search a Name in the PathSet: returns the path string if found.
     pub fn contains<'a>(&'a self, ctx: &CtxOwner, target: &Name) -> Option<&'a String> {
         self.set
             .iter()
