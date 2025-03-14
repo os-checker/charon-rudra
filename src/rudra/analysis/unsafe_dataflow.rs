@@ -4,6 +4,7 @@ use rustc_middle::ty::{Instance, ParamEnv, TyKind};
 use rustc_span::{Span, DUMMY_SP};*/
 
 use crate::rudra::context::RudraCtxt;
+use charon_lib::pretty::FmtWithCtx;
 // use snafu::{Backtrace, Snafu};
 use termcolor::Color;
 
@@ -60,6 +61,24 @@ impl<'tcx> UnsafeDataflowChecker<'tcx> {
     }
 
     pub fn analyze(self) {
+        dbg!(self.rcx.crate_data.bodies.len());
+        let fmt = &self.rcx.crate_data.into_fmt();
+
+        for (idx_body, body) in self.rcx.crate_data.bodies.iter().enumerate() {
+            let body = &body.as_unstructured().unwrap().body;
+
+            let indexes: Vec<_> = body
+                .iter_indexed_values()
+                .map(|(idx, t)| format!("[{}] {}", idx.index(), t.fmt_with_ctx(fmt)))
+                .collect();
+            println!(
+                "idx_body: {idx_body}, body.len(): {}, indexes: {indexes:#?}",
+                body.len()
+            );
+        }
+        for (i, decl) in self.rcx.crate_data.fun_decls.iter().enumerate() {
+            println!("[{i}] {}", decl.fmt_with_ctx(fmt));
+        }
         // Iterate over all functions
         for decl in self.rcx.crate_data.fun_decls.iter() {
             if let Some(status) = inner::UnsafeDataflowBodyAnalyzer::analyze_body(self.rcx, decl) {
@@ -159,7 +178,7 @@ mod inner {
                 &["PathsDiscovery"],
                 &["discover"],
             ]);
-            let body_id = if let Ok(id) = decl.body {
+            let body_id = if let Ok(id) = dbg!(decl.body) {
                 id
             } else {
                 return None;
