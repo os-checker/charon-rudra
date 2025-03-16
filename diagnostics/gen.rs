@@ -39,10 +39,19 @@ fn gen() -> Result<()> {
         gen_ullbc(test, stem)?;
         println!("analyze {test}");
         let output = analyze(stem)?;
+        println!(
+            "analyze {test} output (empty={}):\n{output}\n",
+            output.is_empty()
+        );
+
         // Skip empty analysis
+        let out_file = format!("{stem}.out");
         if !output.is_empty() {
-            expect_file![format!("{stem}.out")].assert_eq(&output);
+            expect_file![out_file].assert_eq(&output);
             outputs.push((test, output));
+        } else if std::fs::exists(Path::new("diagnostics").join(&out_file)).unwrap() {
+            // detect if unexpected out file exists for empty analysis
+            snafu::whatever!("{out_file} shouldn't exist, because {test} is analyzed as ok.");
         }
     }
 
