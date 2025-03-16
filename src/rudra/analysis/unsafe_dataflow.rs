@@ -4,11 +4,8 @@ use rustc_middle::ty::{Instance, ParamEnv, TyKind};
 use rustc_span::{Span, DUMMY_SP};*/
 
 use crate::rudra::context::RudraCtxt;
-use charon_lib::pretty::FmtWithCtx;
-// use snafu::{Backtrace, Snafu};
 use termcolor::Color;
 
-//use crate::prelude::*;
 use crate::rudra::graph::GraphTaint;
 use crate::rudra::report::rudra_report;
 use crate::rudra::{
@@ -17,7 +14,6 @@ use crate::rudra::{
     paths::{self, *},
     report::{Report, ReportLevel},
     utils,
-    //visitor::ContainsUnsafe,
 };
 use bitflags::bitflags;
 
@@ -61,24 +57,25 @@ impl<'tcx> UnsafeDataflowChecker<'tcx> {
     }
 
     pub fn analyze(self) {
-        dbg!(self.rcx.crate_data.bodies.len());
-        let fmt = &self.rcx.crate_data.into_fmt();
+        // dbg!(self.rcx.crate_data.bodies.len());
+        // let fmt = &self.rcx.crate_data.into_fmt();
+        //
+        // for (idx_body, body) in self.rcx.crate_data.bodies.iter().enumerate() {
+        //     let body = &body.as_unstructured().unwrap().body;
+        //
+        //     let indexes: Vec<_> = body
+        //         .iter_indexed_values()
+        //         .map(|(idx, t)| format!("[{}] {}", idx.index(), t.fmt_with_ctx(fmt)))
+        //         .collect();
+        //     println!(
+        //         "idx_body: {idx_body}, body.len(): {}, indexes: {indexes:#?}",
+        //         body.len()
+        //     );
+        // }
+        // for (i, decl) in self.rcx.crate_data.fun_decls.iter().enumerate() {
+        //     println!("[{i}] {}", decl.fmt_with_ctx(fmt));
+        // }
 
-        for (idx_body, body) in self.rcx.crate_data.bodies.iter().enumerate() {
-            let body = &body.as_unstructured().unwrap().body;
-
-            let indexes: Vec<_> = body
-                .iter_indexed_values()
-                .map(|(idx, t)| format!("[{}] {}", idx.index(), t.fmt_with_ctx(fmt)))
-                .collect();
-            println!(
-                "idx_body: {idx_body}, body.len(): {}, indexes: {indexes:#?}",
-                body.len()
-            );
-        }
-        for (i, decl) in self.rcx.crate_data.fun_decls.iter().enumerate() {
-            println!("[{i}] {}", decl.fmt_with_ctx(fmt));
-        }
         // Iterate over all functions
         for decl in self.rcx.crate_data.fun_decls.iter() {
             if let Some(status) = inner::UnsafeDataflowBodyAnalyzer::analyze_body(self.rcx, decl) {
@@ -152,6 +149,7 @@ mod inner {
 
     pub struct UnsafeDataflowBodyAnalyzer<'a, 'tcx> {
         rcx: RudraCtxt<'tcx>,
+        fn_def_id: FunDeclId,
         body: &'a BodyContents,
         status: UnsafeDataflowStatus,
         ptr_read_set: PathSet,
@@ -160,9 +158,10 @@ mod inner {
     }
 
     impl<'a, 'tcx> UnsafeDataflowBodyAnalyzer<'a, 'tcx> {
-        fn new(rcx: RudraCtxt<'tcx>, body: &'a BodyContents) -> Self {
+        fn new(rcx: RudraCtxt<'tcx>, fn_def_id: FunDeclId, body: &'a BodyContents) -> Self {
             UnsafeDataflowBodyAnalyzer {
                 rcx,
+                fn_def_id,
                 body,
                 status: Default::default(),
                 ptr_read_set: PathSet::new(&[&PTR_READ[..], &PTR_DIRECT_READ[..]]),
@@ -178,7 +177,7 @@ mod inner {
                 &["PathsDiscovery"],
                 &["discover"],
             ]);
-            let body_id = if let Ok(id) = dbg!(decl.body) {
+            let body_id = if let Ok(id) = decl.body {
                 id
             } else {
                 return None;
@@ -208,8 +207,8 @@ mod inner {
                             Some(body_analyzer.analyze())
                         }
                 }*/
-                let body_analyzer =
-                    UnsafeDataflowBodyAnalyzer::new(rcx, &body.as_unstructured().unwrap().body);
+                let body = &body.as_unstructured().unwrap().body;
+                let body_analyzer = UnsafeDataflowBodyAnalyzer::new(rcx, decl.def_id, body);
                 Some(body_analyzer.analyze())
             } /*else {
                   // We don't perform interprocedural analysis,
