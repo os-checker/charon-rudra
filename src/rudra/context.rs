@@ -215,6 +215,7 @@ impl<'tcx> RudraCtxtOwner<'tcx> {
 }*/
 
 use crate::rudra::report::ReportLevel;
+use charon_lib::ast::{GenericParams, TraitClause};
 use charon_lib::name_matcher::NamePattern;
 use charon_lib::types::{RefKind, TraitDeclId, TraitImplId, Ty, TyKind, TypeDeclId, TypeId};
 use charon_lib::ullbc_ast::TranslatedCrate;
@@ -292,13 +293,48 @@ impl CtxOwner {
 
     /// Return true if a type is copyable.
     /// This is an approximation.
-    pub fn is_copyable(&self, ty: &Ty) -> bool {
+    /// generic_params and trait_clauses are from the caller.
+    pub fn is_copyable(
+        &self,
+        ty: &Ty,
+        _generic_params: &GenericParams,
+        trait_clauses: &[&TraitClause],
+        tcx: &TranslatedCrate,
+    ) -> bool {
+        // let fmt = &tcx.into_fmt();
         use TyKind::*;
         match ty.kind() {
-            Adt(TypeId::Tuple, args) => args.types.iter().all(|a| self.is_copyable(a)),
+            Adt(TypeId::Tuple, args) => args
+                .types
+                .iter()
+                .all(|a| self.is_copyable(a, _generic_params, trait_clauses, tcx)),
             Adt(TypeId::Adt(id), _) => self.copyable.contains(id),
             Adt(TypeId::Builtin(_), _) => false,
-            TypeVar(_) => false, // I don't think we need to be more precise
+            TypeVar(ty) => {
+                // let ty_name = &*generic_params.types.get(*ty).unwrap().name;
+                // dbg!(ty, &generic_params.types, ty_name);
+                for &trait_clause in trait_clauses {
+                    let trait_ = &trait_clause.trait_.skip_binder;
+                    let trait_def = tcx.trait_decls.get(trait_.trait_id).unwrap();
+                    let trait_name = &trait_def.item_meta.name;
+                    let is_copy_trait = trait_name.equals_ref_name(&["core", "marker", "Copy"]);
+                    // dbg!(trait_name, is_copy_trait);
+
+                    if is_copy_trait {
+                        // there is a Copy generic type
+                        for ele in trait_.generics.types.iter() {
+                            // dbg!(ele.fmt_with_ctx(fmt));
+                            if let Some(caller_gty) = ele.kind().as_type_var() {
+                                // caller and callee share the same type param
+                                if ty == caller_gty {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+                false
+            }
             Literal(_) => true,
             Never => false,
             Ref(_, _, r) => *r == RefKind::Shared,

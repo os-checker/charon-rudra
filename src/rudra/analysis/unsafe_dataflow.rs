@@ -253,8 +253,12 @@ mod inner {
                                 log::trace!(
                                     "Found potential strong lifetime bypass: {name_str} (block: {id})"
                                 );
-                                if self.fn_called_on_copy(*callee_did, generics, &self.ptr_read_set)
-                                {
+                                if self.fn_called_on_copy(
+                                    self.fn_def_id,
+                                    *callee_did,
+                                    generics,
+                                    &self.ptr_read_set,
+                                ) {
                                     // read on Copy types is not a lifetime bypass.
                                     continue;
                                 }
@@ -276,6 +280,7 @@ mod inner {
                                 paths::WEAK_LIFETIME_BYPASS_LIST.contains(self.rcx, name)
                             {
                                 if self.fn_called_on_copy(
+                                    self.fn_def_id,
                                     *callee_did,
                                     generics,
                                     &self.ptr_write_set,
@@ -365,14 +370,39 @@ mod inner {
 
         fn fn_called_on_copy(
             &self,
+            fn_def_id: FunDeclId,
             callee_did: FunDeclId,
             generics: &GenericArgs,
             paths: &PathSet,
         ) -> bool {
-            if let Some(decl) = self.rcx.crate_data.fun_decls.get(callee_did) {
+            let tcx = &self.rcx.crate_data;
+            // let fmt = &tcx.into_fmt();
+            // let fmt_generics = generics.fmt_with_ctx(fmt);
+            // dbg!(generics, &fmt_generics);
+
+            // trait clauses on the caller
+            let caller = &tcx.fun_decls.get(fn_def_id).unwrap();
+            let trait_clauses = &caller.signature.generics.trait_clauses;
+            let trait_clauses: Vec<_> = trait_clauses
+                .iter()
+                // .inspect(|c| _ = dbg!(c.fmt_with_ctx(fmt)))
+                .collect();
+
+            // generics on the caller of core::ptr::read
+            // generics
+            //     .trait_refs
+            //     .iter()
+            //     .for_each(|t| _ = dbg!(t.fmt_with_ctx(fmt)));
+
+            if let Some(decl) = tcx.fun_decls.get(callee_did) {
                 if paths.contains(self.rcx, &decl.item_meta.name).is_some() {
                     // Just check the first type argument
-                    return self.rcx.is_copyable(generics.types.get(0.into()).unwrap());
+                    return self.rcx.is_copyable(
+                        generics.types.get(0.into()).unwrap(),
+                        &caller.signature.generics,
+                        &trait_clauses,
+                        tcx,
+                    );
                 }
             }
             false
