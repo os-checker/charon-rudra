@@ -2,7 +2,7 @@ use crate::progress_info;
 use crate::rudra::analysis::{
     //SendSyncVarianceChecker,
     UnsafeDataflowChecker,
-    //UnsafeDestructorChecker,
+    UnsafeDestructorChecker,
 };
 use crate::rudra::context::CtxOwner;
 use charon_lib::ast::TranslatedCrate;
@@ -31,7 +31,7 @@ impl Default for RudraConfig {
             verbosity: LevelFilter::Info,
             //verbosity: Verbosity::Trace,
             report_level: ReportLevel::Info,
-            unsafe_destructor_enabled: false,
+            unsafe_destructor_enabled: true,
             send_sync_variance_enabled: true,
             unsafe_dataflow_enabled: true,
         }
@@ -103,6 +103,13 @@ pub fn analyze(crate_data: TranslatedCrate, config: RudraConfig) {
         run_analysis("UnsafeDataflow", || {
             let checker = UnsafeDataflowChecker::new(rcx);
             checker.analyze();
+        })
+    }
+
+    // Unsafe destructor analysis
+    if config.unsafe_destructor_enabled {
+        run_analysis("UnsafeDestructor", || {
+            UnsafeDestructorChecker::new(rcx).analyze();
         })
     }
 }
