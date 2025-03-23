@@ -1,0 +1,7 @@
+Error (UnsafeDestructor): Potential unsafe destructor issue in `fp1::{impl core::ops::drop::Drop for fp1::Leak<'_0>}::drop`
+-> tests/unsafe_destructor/fp1.rs:15:4-19:5
+fn drop(&mut self) {
+        unsafe {
+            [0m[31mself.vec.set_len(0)[0m;
+        }
+[0m
