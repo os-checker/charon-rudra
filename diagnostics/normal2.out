@@ -1,0 +1,7 @@
+Error (UnsafeDestructor): Potential unsafe destructor issue in `normal2::{impl core::ops::drop::Drop for normal2::StrcCtx}::drop`
+-> tests/unsafe_destructor/normal2.rs:16:4-20:5
+fn drop(&mut self) {
+        unsafe {
+            let _ = [0m[31mstd::ffi::CString::from_raw(self.ptr as *mut std::os::raw::c_char)[0m;
+        }
+[0m

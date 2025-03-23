@@ -1,0 +1,7 @@
+Error (UnsafeDestructor): Potential unsafe destructor issue in `ffi::{impl core::ops::drop::Drop for ffi::MyStruct}::drop`
+-> tests/unsafe_destructor/ffi.rs:16:4-20:5
+fn drop(&mut self) {
+        unsafe {
+            [0m[31mextern_unsafe(self.0)[0m;
+        }
+[0m
