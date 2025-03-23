@@ -53,6 +53,8 @@ impl<'tcx> UnsafeDestructorChecker<'tcx> {
 
             for bb in body.body.iter() {
                 for stmt in &bb.statements {
+                    // NOTE: since charon is unable to tell if a fn is extern,
+                    // there will be false positive compared to Rudra.
                     if let Some(call) = stmt.content.as_call() {
                         if let FnOperand::Regular(fn_ptr) = &call.func {
                             match &fn_ptr.func {
