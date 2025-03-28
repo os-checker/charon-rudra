@@ -86,9 +86,9 @@ impl From<AnalysisKind> for Cow<'static, str> {
                 if sv_analyses.contains(SendSyncBehaviorFlag::API_SYNC_FOR_SYNC) {
                     v.push("ApiSyncforSync")
                 }
-                if sv_analyses.contains(SendSyncBehaviorFlag::PHANTOM_SEND_FOR_SEND) {
-                    v.push("PhantomSendForSend")
-                }
+                // if sv_analyses.contains(SendSyncBehaviorFlag::PHANTOM_SEND_FOR_SEND) {
+                //     v.push("PhantomSendForSend")
+                // }
                 if sv_analyses.contains(SendSyncBehaviorFlag::NAIVE_SEND_FOR_SEND) {
                     v.push("NaiveSendForSend")
                 }

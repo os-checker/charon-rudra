@@ -23,7 +23,6 @@ use rustc_middle::ty::{
 };
 use rustc_span::symbol::sym;*/
 
-
 use crate::rudra::analysis::IntoReportLevel;
 //use crate::prelude::*;
 use crate::rudra::report::ReportLevel;
@@ -204,7 +203,7 @@ bitflags! {
         // T: Sync for impl Sync (with api check & phantom check)
         const API_SYNC_FOR_SYNC = 0b00000100;
         // T: Send for impl Send (with phantom check)
-        const PHANTOM_SEND_FOR_SEND = 0b00000010;
+        // const PHANTOM_SEND_FOR_SEND = 0b00000010;
         // T: Send for impl Send (no api check, no phantom check)
         const NAIVE_SEND_FOR_SEND = 0b00001000;
         // T: Sync for impl Sync (no api check, no phantom check)
@@ -220,7 +219,7 @@ impl IntoReportLevel for BehaviorFlag {
     fn report_level(&self) -> ReportLevel {
         let high = BehaviorFlag::API_SEND_FOR_SYNC | BehaviorFlag::RELAX_SEND;
         let med = BehaviorFlag::API_SYNC_FOR_SYNC
-            | BehaviorFlag::PHANTOM_SEND_FOR_SEND
+            // | BehaviorFlag::PHANTOM_SEND_FOR_SEND
             | BehaviorFlag::RELAX_SYNC;
 
         if !(*self & high).is_empty() {
