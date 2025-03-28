@@ -17,6 +17,8 @@ pub use unsafe_destructor::UnsafeDestructorChecker;
 
 use std::borrow::Cow;
 
+use super::context::RudraCtxt;
+
 // pub trait AnalysisError: Error + ErrorCompat {
 //     fn kind(&self) -> AnalysisErrorKind;
 //     fn log(&self) {
@@ -135,5 +137,16 @@ impl From<AnalysisKind> for Cow<'static, str> {
                 v.join("/").into()
             }
         }
+    }
+}
+
+#[derive(Clone, Copy)]
+pub struct SendSyncChecker<'tcx> {
+    rcx: RudraCtxt<'tcx>,
+}
+
+impl<'tcx> SendSyncChecker<'tcx> {
+    pub fn new(rcx: RudraCtxt<'tcx>) -> Self {
+        Self { rcx }
     }
 }

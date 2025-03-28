@@ -4,6 +4,9 @@ use crate::rudra::analysis::IntoReportLevel;
 use crate::rudra::report::ReportLevel;
 use bitflags::bitflags;
 
+mod analyze_send;
+mod utils;
+
 bitflags! {
     #[derive(Default, Debug, Clone, Copy)]
     pub struct BehaviorFlag: u8 {
