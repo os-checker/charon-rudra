@@ -1,4 +1,7 @@
+#![allow(dead_code)]
 use charon_lib::ast::*;
+
+mod adt_generic_params;
 
 #[derive(Clone, Copy)]
 pub struct Krate<'a> {

@@ -21,6 +21,9 @@ use std::io::BufReader;
 //use std::path::PathBuf;
 //use std::process::Command;
 
+#[macro_use]
+extern crate tracing;
+
 fn main() {
     // Initialize the logger
     rudra::log::setup_logging().expect("Rudra failed to initialize");

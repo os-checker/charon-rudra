@@ -273,6 +273,7 @@ dependencies = [
  "expect-test",
  "fern",
  "if_chain",
+ "indexmap",
  "log",
  "maplit",
  "once_cell",
