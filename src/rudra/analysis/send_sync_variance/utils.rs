@@ -7,4 +7,4 @@ mod adt_generic_params;
 pub use adt_generic_params::AdtGenericParams;
 
 mod generics_mapping;
-pub use generics_mapping::self_type;
+pub use generics_mapping::{self_type, trait_bounds_on_a_trait_impl};

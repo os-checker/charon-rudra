@@ -1,5 +1,7 @@
-use charon_lib::ast::*;
+use charon_lib::{ast::*, formatter::FmtCtx};
 use indexmap::IndexMap;
+
+use super::trait_bounds_on_a_trait_impl;
 
 /// Generic param infomation, related to Send/Sync analysis.
 #[derive(Debug, Default)]
@@ -22,6 +24,7 @@ pub struct ParamInfo {
 type Args = IndexMap<TypeVarId, ParamInfo>;
 
 /// Generic param on adt.
+#[derive(Debug)]
 pub struct AdtGenericParams {
     /// Type id of adt.
     pub tid: TypeDeclId,
@@ -48,6 +51,17 @@ impl AdtGenericParams {
         }
 
         AdtGenericParams { tid, args }
+    }
+
+    pub fn add_trait_bounds_on_send_impl(&mut self, imp: &TraitImpl, ctx: &FmtCtx) {
+        for (adt_type_var, trait_id) in trait_bounds_on_a_trait_impl(imp, ctx) {
+            let type_var = self.args.get_mut(&adt_type_var).unwrap();
+            type_var.send_impl_trait_bounds.push(trait_id);
+        }
+        // dedup trait bounds (Size bound will be likely duplicate)
+        for info in self.args.values_mut() {
+            info.send_impl_trait_bounds.dedup();
+        }
     }
 }
 
