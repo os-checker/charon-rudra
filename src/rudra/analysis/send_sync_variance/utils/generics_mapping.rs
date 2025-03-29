@@ -54,6 +54,7 @@ impl ImplToAdtTypeVar {
     }
 
     /// Fill the mapping from impl/fn sig generic types to adt type generic types.
+    /// adt_generics is from a impl/fn sig, not from type decl.
     pub fn fill(&mut self, adt_generics: &GenericArgs) {
         self.inner.clear();
         for (adt_type_var_id, impl_type_var) in adt_generics.types.iter().enumerate() {
