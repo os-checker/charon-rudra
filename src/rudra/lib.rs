@@ -1,9 +1,5 @@
 use crate::progress_info;
-use crate::rudra::analysis::{
-    //SendSyncVarianceChecker,
-    UnsafeDataflowChecker,
-    UnsafeDestructorChecker,
-};
+use crate::rudra::analysis::{SendSyncChecker, UnsafeDataflowChecker, UnsafeDestructorChecker};
 use crate::rudra::context::CtxOwner;
 use charon_lib::ast::TranslatedCrate;
 
@@ -78,31 +74,17 @@ pub fn analyze(crate_data: TranslatedCrate, config: RudraConfig) {
     let rcx_owner = CtxOwner::new(crate_data, config.report_level);
     let rcx = &*Box::leak(Box::new(rcx_owner));
 
-    // shadow the variable tcx
-    #[allow(unused_variables)]
-    let tcx = ();
-
-    /*// Unsafe destructor analysis
-    if config.unsafe_destructor_enabled {
-        run_analysis("UnsafeDestructor", || {
-            let mut checker = UnsafeDestructorChecker::new(rcx);
-            checker.analyze();
-        })
-    }
-
     // Send/Sync variance analysis
     if config.send_sync_variance_enabled {
         run_analysis("SendSyncVariance", || {
-            let checker = SendSyncVarianceChecker::new(rcx);
-            checker.analyze();
+            SendSyncChecker::new(rcx).analyze();
         })
-    }*/
+    }
 
     // Unsafe dataflow analysis
     if config.unsafe_dataflow_enabled {
         run_analysis("UnsafeDataflow", || {
-            let checker = UnsafeDataflowChecker::new(rcx);
-            checker.analyze();
+            UnsafeDataflowChecker::new(rcx).analyze();
         })
     }
 

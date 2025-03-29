@@ -5,6 +5,7 @@ use crate::rudra::report::ReportLevel;
 use bitflags::bitflags;
 
 mod analyze;
+pub use analyze::SendSyncChecker;
 mod utils;
 
 bitflags! {
