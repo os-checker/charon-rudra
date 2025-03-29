@@ -8,7 +8,7 @@ mod unsafe_destructor;
 use crate::rudra::report::ReportLevel;
 
 pub use send_sync_variance::BehaviorFlag as SendSyncBehaviorFlag;
-//pub use send_sync_variance::{SendSyncVarianceChecker};
+pub use send_sync_variance::SendSyncChecker;
 pub use unsafe_dataflow::BehaviorFlag as UnsafeDataflowBehaviorFlag;
 pub use unsafe_dataflow::UnsafeDataflowChecker;
 pub use unsafe_destructor::UnsafeDestructorChecker;
@@ -16,8 +16,6 @@ pub use unsafe_destructor::UnsafeDestructorChecker;
 // pub type AnalysisResult<'tcx, T> = Result<T, Box<dyn AnalysisError + 'tcx>>;
 
 use std::borrow::Cow;
-
-use super::context::RudraCtxt;
 
 // pub trait AnalysisError: Error + ErrorCompat {
 //     fn kind(&self) -> AnalysisErrorKind;
@@ -137,16 +135,5 @@ impl From<AnalysisKind> for Cow<'static, str> {
                 v.join("/").into()
             }
         }
-    }
-}
-
-#[derive(Clone, Copy)]
-pub struct SendSyncChecker<'tcx> {
-    rcx: RudraCtxt<'tcx>,
-}
-
-impl<'tcx> SendSyncChecker<'tcx> {
-    pub fn new(rcx: RudraCtxt<'tcx>) -> Self {
-        Self { rcx }
     }
 }
