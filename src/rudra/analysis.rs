@@ -7,8 +7,8 @@ mod unsafe_destructor;
 
 use crate::rudra::report::ReportLevel;
 
-pub use send_sync_variance::BehaviorFlag as SendSyncBehaviorFlag;
 pub use send_sync_variance::SendSyncChecker;
+pub use send_sync_variance::Tag as SendSyncBehaviorFlag;
 pub use unsafe_dataflow::BehaviorFlag as UnsafeDataflowBehaviorFlag;
 pub use unsafe_dataflow::UnsafeDataflowChecker;
 pub use unsafe_destructor::UnsafeDestructorChecker;
@@ -92,15 +92,15 @@ impl From<AnalysisKind> for Cow<'static, str> {
                 if sv_analyses.contains(SendSyncBehaviorFlag::NAIVE_SEND_FOR_SEND) {
                     v.push("NaiveSendForSend")
                 }
-                if sv_analyses.contains(SendSyncBehaviorFlag::NAIVE_SYNC_FOR_SYNC) {
-                    v.push("NaiveSyncForSync")
-                }
-                if sv_analyses.contains(SendSyncBehaviorFlag::RELAX_SEND) {
-                    v.push("RelaxSend")
-                }
-                if sv_analyses.contains(SendSyncBehaviorFlag::RELAX_SYNC) {
-                    v.push("RelaxSync")
-                }
+                // if sv_analyses.contains(SendSyncBehaviorFlag::NAIVE_SYNC_FOR_SYNC) {
+                //     v.push("NaiveSyncForSync")
+                // }
+                // if sv_analyses.contains(SendSyncBehaviorFlag::RELAX_SEND) {
+                //     v.push("RelaxSend")
+                // }
+                // if sv_analyses.contains(SendSyncBehaviorFlag::RELAX_SYNC) {
+                //     v.push("RelaxSync")
+                // }
                 v.join("/").into()
             }
             AnalysisKind::UnsafeDataflow(bypass_kinds) => {

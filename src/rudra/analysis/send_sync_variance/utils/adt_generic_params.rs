@@ -1,7 +1,6 @@
+use super::{super::Tag, generics_mapping::ImplToAdtTypeVar, trait_bounds_on_a_trait_impl};
 use charon_lib::{ast::*, formatter::FmtCtx};
 use indexmap::IndexMap;
-
-use super::trait_bounds_on_a_trait_impl;
 
 /// Generic param infomation, related to Send/Sync analysis.
 #[derive(Debug, Default)]
@@ -20,8 +19,24 @@ pub struct ParamInfo {
     // pub is_in_phantomdata: bool,
 }
 
+impl ParamInfo {
+    fn update_ownership_behavior(&mut self, flag: OwnershipFlag) {
+        self.ownership_behavior.insert(flag);
+    }
+
+    pub fn tag(&self, mut tag: Tag) -> Tag {
+        if self.ownership_behavior.contains(OwnershipFlag::OWNED) {
+            tag.insert(Tag::API_SEND_FOR_SYNC);
+        }
+        if self.ownership_behavior.contains(OwnershipFlag::POINTED) {
+            tag.insert(Tag::API_SYNC_FOR_SYNC);
+        }
+        tag
+    }
+}
+
 /// Type param and analysis basis on a adt.
-type Args = IndexMap<TypeVarId, ParamInfo>;
+pub type Args = IndexMap<TypeVarId, ParamInfo>;
 
 /// Generic param on adt.
 #[derive(Debug)]
@@ -47,18 +62,87 @@ impl AdtGenericParams {
 
         // type params ownership behaviors from adt decl
         for field in fields(&adt.kind) {
-            ownership_behavior(field.ty.kind(), &mut args, &mut false);
+            let mut v = vec![];
+            ownership_behavior(field.ty.kind(), &mut v, &mut false);
+            for (type_var_id, flag) in v {
+                let info = &mut args.get_mut(&type_var_id).unwrap();
+                info.update_ownership_behavior(flag);
+            }
         }
 
         AdtGenericParams { tid, args }
     }
 
-    pub fn add_trait_bounds_on_send_impl(&mut self, imp: &TraitImpl, ctx: &FmtCtx) {
+    pub fn add_trait_bounds_on_impl(&mut self, imp: &TraitImpl, ctx: &FmtCtx, send: bool) {
         for (adt_type_var, trait_id) in trait_bounds_on_a_trait_impl(imp, ctx) {
             let type_var = self.args.get_mut(&adt_type_var).unwrap();
-            type_var.send_impl_trait_bounds.push(trait_id);
+            if send {
+                &mut type_var.send_impl_trait_bounds
+            } else {
+                &mut type_var.sync_impl_trait_bounds
+            }
+            .push(trait_id);
         }
     }
+
+    /// Update ownership state on adt's type var.
+    pub fn ownership_of_type_var_on_api(&mut self, f: &FunDecl) {
+        // only look at Regular and TraitImpl functions (TraitDecl is excluded)
+        // https://os-checker.github.io/charon-rudra/charon/charon_lib/ast/gast/enum.ItemKind.html
+        if matches!(&f.kind, ItemKind::TraitDecl { .. }) {
+            return;
+        }
+
+        let mut mapping = ImplToAdtTypeVar::default();
+        let mut impl_type_var_id_flags = vec![];
+        let sig = &f.signature;
+
+        for kind in sig.inputs.iter().chain([&sig.output]).map(|t| t.kind()) {
+            // Skip types irrelevant to this adt. We use naive for loop, because
+            // manual sync impls are rare, so such adts are rare, if types are
+            // cached beforehand, a lot of unused adts fns will be computed.
+            // We also omit the adt used as a field or variant in another adt.
+            // FIXME: handle Self type via PathElem in Name of ItemMeta
+            let Some((adt_generics, mut behind_a_pointer)) = adt(kind, self.tid, false) else {
+                continue;
+            };
+            println!("Analyze func {}", f.def_id);
+
+            // TypeVarId is defined on impl block or function sig,
+            // so need a mapping to focus on adt's TypeVarId.
+            mapping.fill(adt_generics);
+
+            ownership_behavior(kind, &mut impl_type_var_id_flags, &mut behind_a_pointer);
+            for (impl_type_var_id, flag) in &impl_type_var_id_flags {
+                let adt_type_var_id = mapping.get_adt_type_var_id(impl_type_var_id);
+                let info = &mut self.args.get_mut(&adt_type_var_id).unwrap();
+                info.update_ownership_behavior(*flag);
+            }
+        }
+    }
+
+    /// Default tag state based on ownership behaviors of all args.
+    pub fn default_tag_for_all_args(&self) -> Tag {
+        self.args
+            .iter()
+            .fold(Tag::empty(), |acc, (_, info)| info.tag(acc))
+    }
+}
+
+fn adt(kind: &TyKind, tid: TypeDeclId, behind_a_pointer: bool) -> Option<(&GenericArgs, bool)> {
+    match kind {
+        TyKind::Adt(t, p) => {
+            if let Some(&id) = t.as_adt() {
+                if id == tid {
+                    return Some((p, behind_a_pointer));
+                }
+            }
+        }
+        // FIXME: &Wrapper<T> is approximately treated as &T
+        TyKind::Ref(_, t, _) | TyKind::RawPtr(t, _) => return adt(t.kind(), tid, true),
+        _ => (),
+    }
+    None
 }
 
 /// Add adt definition trait bounds to each generic arg.
@@ -96,26 +180,31 @@ fn fields(ty_decl: &TypeDeclKind) -> Vec<&Field> {
     }
 }
 
-fn ownership_behavior(ty_kind: &TyKind, args: &mut Args, behind_a_pointer: &mut bool) {
+fn ownership_behavior(
+    ty_kind: &TyKind,
+    v: &mut Vec<(TypeVarId, OwnershipFlag)>,
+    behind_a_pointer: &mut bool,
+) {
     match ty_kind {
         TyKind::Adt(_, generics) => {
             for ty in generics.types.iter() {
-                ownership_behavior(ty.kind(), args, behind_a_pointer);
+                ownership_behavior(ty.kind(), v, behind_a_pointer);
             }
         }
         TyKind::TypeVar(type_var_id) => {
-            let ownership = &mut args.get_mut(type_var_id).unwrap().ownership_behavior;
+            // let ownership = &mut args.get_mut(type_var_id).unwrap().ownership_behavior;
             let flag = if *behind_a_pointer {
                 OwnershipFlag::POINTED
             } else {
                 OwnershipFlag::OWNED
             };
-            *ownership |= flag;
+            // *ownership |= flag;
+            v.push((*type_var_id, flag));
         }
         TyKind::Ref(_, ty, _) | TyKind::RawPtr(ty, _) => {
-            *behind_a_pointer = true;
-            ownership_behavior(ty.kind(), args, behind_a_pointer);
-            *behind_a_pointer = false;
+            let old_state = std::mem::replace(behind_a_pointer, true);
+            ownership_behavior(ty.kind(), v, behind_a_pointer);
+            *behind_a_pointer = old_state;
         }
         _ => (),
     }

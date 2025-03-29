@@ -1,7 +1,7 @@
 //! Unsafe Send/Sync impl detector
 
-use crate::rudra::analysis::IntoReportLevel;
-use crate::rudra::report::ReportLevel;
+// use crate::rudra::analysis::IntoReportLevel;
+// use crate::rudra::report::ReportLevel;
 use bitflags::bitflags;
 
 mod analyze;
@@ -10,7 +10,7 @@ mod utils;
 
 bitflags! {
     #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
-    pub struct BehaviorFlag: u8 {
+    pub struct Tag: u8 {
         // T: Send for impl Sync (with api check & phantom check)
         const API_SEND_FOR_SYNC = 0b00000001;
         // T: Sync for impl Sync (with api check & phantom check)
@@ -20,27 +20,27 @@ bitflags! {
         // T: Send for impl Send (no api check, no phantom check)
         const NAIVE_SEND_FOR_SEND = 0b00001000;
         // T: Sync for impl Sync (no api check, no phantom check)
-        const NAIVE_SYNC_FOR_SYNC = 0b00010000;
+        // const NAIVE_SYNC_FOR_SYNC = 0b00010000;
         // Relaxed Send for impl Send (with phantom check)
-        const RELAX_SEND = 0b00100000;
+        // const RELAX_SEND = 0b00100000;
         // Relaxed Sync for impl Sync (with phantom check)
-        const RELAX_SYNC = 0b01000000;
+        // const RELAX_SYNC = 0b01000000;
     }
 }
 
-impl IntoReportLevel for BehaviorFlag {
-    fn report_level(&self) -> ReportLevel {
-        let high = BehaviorFlag::API_SEND_FOR_SYNC | BehaviorFlag::RELAX_SEND;
-        let med = BehaviorFlag::API_SYNC_FOR_SYNC
-            // | BehaviorFlag::PHANTOM_SEND_FOR_SEND
-            | BehaviorFlag::RELAX_SYNC;
-
-        if !(*self & high).is_empty() {
-            ReportLevel::Error
-        } else if !(*self & med).is_empty() {
-            ReportLevel::Warning
-        } else {
-            ReportLevel::Info
-        }
-    }
-}
+// impl IntoReportLevel for Tag {
+//     fn report_level(&self) -> ReportLevel {
+//         let high = Tag::API_SEND_FOR_SYNC | Tag::RELAX_SEND;
+//         let med = Tag::API_SYNC_FOR_SYNC
+//             // | BehaviorFlag::PHANTOM_SEND_FOR_SEND
+//             | Tag::RELAX_SYNC;
+//
+//         if !(*self & high).is_empty() {
+//             ReportLevel::Error
+//         } else if !(*self & med).is_empty() {
+//             ReportLevel::Warning
+//         } else {
+//             ReportLevel::Info
+//         }
+//     }
+// }
