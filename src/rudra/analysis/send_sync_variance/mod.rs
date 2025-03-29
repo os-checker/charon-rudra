@@ -4,7 +4,7 @@ use crate::rudra::analysis::IntoReportLevel;
 use crate::rudra::report::ReportLevel;
 use bitflags::bitflags;
 
-mod analyze_send;
+mod analyze;
 mod utils;
 
 bitflags! {
