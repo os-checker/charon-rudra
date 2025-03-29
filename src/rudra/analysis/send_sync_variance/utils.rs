@@ -2,6 +2,7 @@
 use charon_lib::ast::*;
 
 mod adt_generic_params;
+pub use adt_generic_params::AdtGenericParams;
 
 #[derive(Clone, Copy)]
 pub struct Krate<'a> {
