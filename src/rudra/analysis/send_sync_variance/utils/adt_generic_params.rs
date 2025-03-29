@@ -58,10 +58,6 @@ impl AdtGenericParams {
             let type_var = self.args.get_mut(&adt_type_var).unwrap();
             type_var.send_impl_trait_bounds.push(trait_id);
         }
-        // dedup trait bounds (Size bound will be likely duplicate)
-        for info in self.args.values_mut() {
-            info.send_impl_trait_bounds.dedup();
-        }
     }
 }
 

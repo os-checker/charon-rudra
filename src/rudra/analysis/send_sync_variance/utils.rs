@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 mod trait_did;
 pub use trait_did::{Krate, TraitDid};
 

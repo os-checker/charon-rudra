@@ -9,7 +9,7 @@ pub use analyze::SendSyncChecker;
 mod utils;
 
 bitflags! {
-    #[derive(Default, Debug, Clone, Copy)]
+    #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
     pub struct BehaviorFlag: u8 {
         // T: Send for impl Sync (with api check & phantom check)
         const API_SEND_FOR_SYNC = 0b00000001;
