@@ -36,7 +36,7 @@ impl AdtTypeVarId {
 
 /// Generic params order
 #[derive(Debug, Default)]
-struct ImplToAdtTypeVar {
+pub struct ImplToAdtTypeVar {
     inner: IndexMap<TypeVarId, AdtTypeVarId>,
 }
 
@@ -47,9 +47,19 @@ impl ImplToAdtTypeVar {
         self.inner.insert(key, AdtTypeVarId(val));
     }
 
-    fn get_adt_type_var_id(&self, impl_type_var_id: &TypeVarId) -> TypeVarId {
+    /// Convert a impl/fn sig type var id into adt type var id.
+    pub fn get_adt_type_var_id(&self, impl_type_var_id: &TypeVarId) -> TypeVarId {
         let id = self.inner.get(impl_type_var_id).unwrap();
         id.into_type_var_id()
+    }
+
+    /// Fill the mapping from impl/fn sig generic types to adt type generic types.
+    pub fn fill(&mut self, adt_generics: &GenericArgs) {
+        self.inner.clear();
+        for (adt_type_var_id, impl_type_var) in adt_generics.types.iter().enumerate() {
+            let key = *impl_type_var.as_type_var().unwrap();
+            self.insert(key, adt_type_var_id);
+        }
     }
 }
 
@@ -57,13 +67,10 @@ impl ImplToAdtTypeVar {
 pub type TypeVarTraitBound = Vec<(TypeVarId, TraitDeclId)>;
 
 pub fn trait_bounds_on_a_trait_impl(imp: &TraitImpl, ctx: &FmtCtx) -> TypeVarTraitBound {
-    let mut mapping = ImplToAdtTypeVar::default();
     let this = self_type(imp, ctx);
     let adt_generics = this.as_adt().unwrap().1;
-    for (adt_type_var_id, impl_type_var) in adt_generics.types.iter().enumerate() {
-        let key = *impl_type_var.as_type_var().unwrap();
-        mapping.insert(key, adt_type_var_id);
-    }
+    let mut mapping = ImplToAdtTypeVar::default();
+    mapping.fill(adt_generics);
 
     let trait_clauses = &imp.generics.trait_clauses;
     let mut v = Vec::with_capacity(imp.generics.trait_clauses.len());
