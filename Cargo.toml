@@ -39,6 +39,7 @@ tracing-subscriber = { version = "0.3", features = [ "env-filter", "std", "fmt" 
 tracing-tree = { git = "https://github.com/Nadrieril/tracing-tree", features = [ "time" ] } # Fork with improved formating and timing info.
 tracing = { version = "0.1", features = [ "max_level_trace" ] }
 prefer-dynamic = "0" # for dynamic linking
+indexmap = "2"
 
 [dev-dependencies]
 # prefer-dynamic = { version = "0.1.2", features = ["link-test"] } # for dynamic linking
