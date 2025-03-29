@@ -22,7 +22,7 @@ pub struct ParamInfo {
 type Args = IndexMap<TypeVarId, ParamInfo>;
 
 /// Generic param on adt.
-pub struct AdtGenericParam {
+pub struct AdtGenericParams {
     /// Type id of adt.
     pub tid: TypeDeclId,
     /// The map order corresponds to the position of adt's generic params.
@@ -31,7 +31,7 @@ pub struct AdtGenericParam {
     pub args: Args,
 }
 
-impl AdtGenericParam {
+impl AdtGenericParams {
     pub fn new(krate: &TranslatedCrate, tid: TypeDeclId) -> Self {
         let adt = &krate.type_decls[tid];
 
@@ -47,7 +47,7 @@ impl AdtGenericParam {
             ownership_behavior(field.ty.kind(), &mut args, &mut false);
         }
 
-        AdtGenericParam { tid, args }
+        AdtGenericParams { tid, args }
     }
 }
 
