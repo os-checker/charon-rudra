@@ -1,3 +1,9 @@
+/*!
+```rudra-test
+test_type = "normal"
+expected_analyzers = []
+```
+!*/
 // cargo run --bin rudra -- --crate-type lib tests/utility/rudra_paths_discovery.rs
 use std::ptr::NonNull;
 
