@@ -69,7 +69,11 @@ impl ImplToAdtTypeVar {
 /// TypeVarId is in adt decl's order.
 pub type TypeVarTraitBound = Vec<(TypeVarId, TraitDeclId)>;
 
-pub fn trait_bounds_on_a_trait_impl(imp: &TraitImpl, ctx: &FmtCtx) -> TypeVarTraitBound {
+pub fn trait_bounds_on_a_trait_impl(
+    imp: &TraitImpl,
+    krate: &TranslatedCrate,
+    ctx: &FmtCtx,
+) -> TypeVarTraitBound {
     let this = self_type(imp, ctx);
     let adt_generics = this.as_adt().unwrap().1;
     let mut mapping = ImplToAdtTypeVar::default();
@@ -79,16 +83,24 @@ pub fn trait_bounds_on_a_trait_impl(imp: &TraitImpl, ctx: &FmtCtx) -> TypeVarTra
     let mut v = Vec::with_capacity(imp.generics.trait_clauses.len());
     for trait_clause in trait_clauses.iter() {
         let trait_bound = &trait_clause.trait_.skip_binder;
+
         // Only simple cases supported: e.g. T: Trait or U: Trait<X> (X doesn't matter here),
         // single Type with single bound, not considering compound type param (i.e. (X, Y): Trait
-        // or <X as Trait1>: Trait2, ...) or supertraits.
+        // or <X as Trait1>: Trait2, ...).
         // Charon will split multi bounds into multi simple trait clauses for us.
         let ty = trait_bound.generics.types.iter().next().unwrap();
         if let Some(impl_type_var_id) = ty.as_type_var() {
-            v.push((
-                mapping.get_adt_type_var_id(impl_type_var_id),
-                trait_bound.trait_id,
-            ));
+            let adt_type_var_id = mapping.get_adt_type_var_id(impl_type_var_id);
+            // add direct trait
+            v.push((adt_type_var_id, trait_bound.trait_id));
+
+            // add supertraits
+            let trait_ = &krate.trait_decls[trait_bound.trait_id];
+            for parent in trait_.parent_clauses.iter() {
+                let supertrait = parent.trait_.skip_binder.trait_id;
+                // this may cause trait collection contains duplicated items
+                v.push((adt_type_var_id, supertrait));
+            }
         }
     }
     v

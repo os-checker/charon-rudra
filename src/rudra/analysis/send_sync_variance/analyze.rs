@@ -11,7 +11,7 @@ use charon_lib::{
 
 pub fn analyze_send(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate, fmt: &FmtCtx) {
     let mut adt_type_params = generic_params(imp, krate, fmt);
-    adt_type_params.add_trait_bounds_on_impl(imp, fmt, true);
+    adt_type_params.add_trait_bounds_on_impl(imp, krate, fmt, true);
 
     // There must be Send trait for Send impls.
     let trait_send = traits.send.unwrap();
@@ -45,7 +45,7 @@ pub fn analyze_send(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate,
 
 pub fn analyze_sync(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate, fmt: &FmtCtx) {
     let mut adt_type_params = generic_params(imp, krate, fmt);
-    adt_type_params.add_trait_bounds_on_impl(imp, fmt, false);
+    adt_type_params.add_trait_bounds_on_impl(imp, krate, fmt, false);
 
     for f in krate.fun_decls.iter() {
         adt_type_params.ownership_of_type_var_on_api(f);
