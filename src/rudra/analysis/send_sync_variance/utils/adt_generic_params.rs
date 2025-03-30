@@ -106,7 +106,6 @@ impl AdtGenericParams {
             let Some((adt_generics, mut behind_a_pointer)) = adt(kind, self.tid, false) else {
                 continue;
             };
-            println!("Analyze func {}", f.def_id);
 
             // TypeVarId is defined on impl block or function sig,
             // so need a mapping to focus on adt's TypeVarId.
@@ -192,13 +191,11 @@ fn ownership_behavior(
             }
         }
         TyKind::TypeVar(type_var_id) => {
-            // let ownership = &mut args.get_mut(type_var_id).unwrap().ownership_behavior;
             let flag = if *behind_a_pointer {
                 OwnershipFlag::POINTED
             } else {
                 OwnershipFlag::OWNED
             };
-            // *ownership |= flag;
             v.push((*type_var_id, flag));
         }
         TyKind::Ref(_, ty, _) | TyKind::RawPtr(ty, _) => {
