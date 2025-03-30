@@ -26,8 +26,4 @@
     "tests/unsafe_destructor/fp1.rs",
     "tests/unsafe_destructor/normal1.rs",
     "tests/unsafe_destructor/normal2.rs",
-    "tests/utility/generic_param_ctxts.rs",
-    "tests/utility/identify_generic_params.rs",
-    "tests/utility/report_handle_macro.rs",
-    "tests/utility/rudra_paths_discovery.rs",
 ]
