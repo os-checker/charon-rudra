@@ -1,14 +1,13 @@
 //! Unsafe Send/Sync impl detector
 
-// use crate::rudra::analysis::IntoReportLevel;
-// use crate::rudra::report::ReportLevel;
-use bitflags::bitflags;
+use crate::rudra::context::RudraCtxt;
+use charon_lib::{ast::TraitImpl, formatter::IntoFormatter};
+use utils::{Krate, TraitDid};
 
 mod analyze;
-pub use analyze::SendSyncChecker;
 mod utils;
 
-bitflags! {
+bitflags::bitflags! {
     #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
     pub struct Tag: u8 {
         // T: Send for impl Sync (with api check & phantom check)
@@ -28,19 +27,35 @@ bitflags! {
     }
 }
 
-// impl IntoReportLevel for Tag {
-//     fn report_level(&self) -> ReportLevel {
-//         let high = Tag::API_SEND_FOR_SYNC | Tag::RELAX_SEND;
-//         let med = Tag::API_SYNC_FOR_SYNC
-//             // | BehaviorFlag::PHANTOM_SEND_FOR_SEND
-//             | Tag::RELAX_SYNC;
-//
-//         if !(*self & high).is_empty() {
-//             ReportLevel::Error
-//         } else if !(*self & med).is_empty() {
-//             ReportLevel::Warning
-//         } else {
-//             ReportLevel::Info
-//         }
-//     }
-// }
+pub struct SendSyncChecker<'tcx> {
+    rcx: RudraCtxt<'tcx>,
+    trait_dids: TraitDid,
+    send_impls: Vec<&'tcx TraitImpl>,
+    sync_impls: Vec<&'tcx TraitImpl>,
+}
+
+impl<'tcx> SendSyncChecker<'tcx> {
+    pub fn new(rcx: RudraCtxt<'tcx>) -> Self {
+        let krate = Krate::new(&rcx.crate_data);
+        let trait_dids = krate.send_sync_copy();
+        Self {
+            rcx,
+            send_impls: krate.trait_impls(trait_dids.send),
+            sync_impls: krate.trait_impls(trait_dids.sync),
+            trait_dids,
+        }
+    }
+
+    pub fn analyze(self) {
+        let krate = &self.rcx.crate_data;
+        let ctx = &krate.into_fmt();
+
+        for imp in &self.send_impls {
+            analyze::analyze_send(imp, &self.trait_dids, krate, ctx);
+        }
+
+        for imp in &self.sync_impls {
+            analyze::analyze_sync(imp, &self.trait_dids, krate, ctx);
+        }
+    }
+}
