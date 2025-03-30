@@ -19,7 +19,7 @@ bitflags::bitflags! {
         // T: Send for impl Send (no api check, no phantom check)
         const NAIVE_SEND_FOR_SEND = 0b00001000;
         // T: Sync for impl Sync (no api check, no phantom check)
-        // const NAIVE_SYNC_FOR_SYNC = 0b00010000;
+        const NAIVE_SYNC_FOR_SYNC = 0b00010000;
         // Relaxed Send for impl Send (with phantom check)
         // const RELAX_SEND = 0b00100000;
         // Relaxed Sync for impl Sync (with phantom check)
