@@ -1,2 +1,2 @@
 [1munsafe impl<P: Ord> Send for Atom<P> {}[0m
-╰───── `[37;41mP[0m` doesn't meet [37;41mTag(NAIVE_SEND_FOR_SEND)[0m
+╰───── `[31;1mP[0m` doesn't meet [31;1mTag(NAIVE_SEND_FOR_SEND)[0m
