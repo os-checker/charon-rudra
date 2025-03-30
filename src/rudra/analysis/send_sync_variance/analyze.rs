@@ -15,6 +15,7 @@ pub fn analyze_send(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate,
 
     // There must be Send trait for Send impls.
     let trait_send = traits.send.unwrap();
+    let trait_sync = traits.sync;
     let trait_copy = traits.copy;
 
     let mut ctx = TraitImplCxt::new(imp, fmt);
@@ -26,14 +27,17 @@ pub fn analyze_send(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate,
         let iter = info.adt_trait_bounds.iter();
         let trait_bounds = iter.chain(&info.send_impl_trait_bounds);
         for &trait_ in trait_bounds {
-            if trait_ == trait_send || trait_copy.map(|copy| trait_ == copy).unwrap_or(false) {
+            if trait_ == trait_send
+                || trait_sync.map(|sync| trait_ == sync).unwrap_or(false)
+                || trait_copy.map(|copy| trait_ == copy).unwrap_or(false)
+            {
                 let tag = Tag::NAIVE_SEND_FOR_SEND;
                 tag_arg.remove(tag);
                 tag_all_args.remove(tag);
             }
         }
 
-        if tag_arg.contains(Tag::NAIVE_SEND_FOR_SEND) {
+        if !tag_arg.is_empty() {
             ctx.report(arg, &tag_arg);
         }
     }

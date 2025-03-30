@@ -1,5 +1,0 @@
-[1munsafe impl<P: Sync> Send for Atom1<P> {}[0m
-╰───── `[31;1mP[0m` doesn't meet [31;1mTag(NAIVE_SEND_FOR_SEND)[0m
-
-[1munsafe impl<P> Send for Atom2<P> where P: Sync {}[0m
-╰───── `[31;1mP[0m` doesn't meet [31;1mTag(NAIVE_SEND_FOR_SEND)[0m
