@@ -1,0 +1,19 @@
+[1mimpl<T> report_handle_macro::{impl core::marker::Send for report_handle_macro::X509LookupMethod<T>[@TraitClause0]}<T> : core::marker::Send<report_handle_macro::X509LookupMethod<T>[@TraitClause0]>
+where
+    [@TraitClause0]: core::marker::Sized<T>,[0m
+╰───── `[31;1mT[0m` doesn't meet [31;1mTag(NAIVE_SEND_FOR_SEND)[0m
+
+[1mimpl<T> report_handle_macro::{impl core::marker::Send for report_handle_macro::X509LookupMethodRef<T>[@TraitClause0]}#1<T> : core::marker::Send<report_handle_macro::X509LookupMethodRef<T>[@TraitClause0]>
+where
+    [@TraitClause0]: core::marker::Sized<T>,[0m
+╰───── `[31;1mT[0m` doesn't meet [31;1mTag(NAIVE_SEND_FOR_SEND)[0m
+
+[1mimpl<T> report_handle_macro::{impl core::marker::Sync for report_handle_macro::X509LookupMethod<T>[@TraitClause0]}#2<T> : core::marker::Sync<report_handle_macro::X509LookupMethod<T>[@TraitClause0]>
+where
+    [@TraitClause0]: core::marker::Sized<T>,[0m
+╰───── `[31;1mT[0m` doesn't meet [31;1mTag(NAIVE_SYNC_FOR_SYNC)[0m
+
+[1mimpl<T> report_handle_macro::{impl core::marker::Sync for report_handle_macro::X509LookupMethodRef<T>[@TraitClause0]}#3<T> : core::marker::Sync<report_handle_macro::X509LookupMethodRef<T>[@TraitClause0]>
+where
+    [@TraitClause0]: core::marker::Sized<T>,[0m
+╰───── `[31;1mT[0m` doesn't meet [31;1mTag(NAIVE_SYNC_FOR_SYNC)[0m
