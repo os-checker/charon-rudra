@@ -4,8 +4,9 @@ use super::{
 };
 use crate::rudra::context::RudraCtxt;
 use charon_lib::{
-    ast::{TraitImpl, TranslatedCrate},
+    ast::{TraitImpl, TranslatedCrate, Ty, TypeVarId},
     formatter::{FmtCtx, IntoFormatter},
+    ids::Vector,
     pretty::FmtWithCtx,
 };
 
@@ -54,16 +55,15 @@ fn generic_params(imp: &TraitImpl, krate: &TranslatedCrate, ctx: &FmtCtx) -> Adt
     AdtGenericParams::new(krate, *adt)
 }
 
-fn analyze_send(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate, ctx: &FmtCtx) {
-    let mut adt_type_params = generic_params(imp, krate, ctx);
-    adt_type_params.add_trait_bounds_on_impl(imp, ctx, true);
-    // dbg!(&adt_type_params);
+fn analyze_send(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate, fmt: &FmtCtx) {
+    let mut adt_type_params = generic_params(imp, krate, fmt);
+    adt_type_params.add_trait_bounds_on_impl(imp, fmt, true);
 
     // There must be Send trait for Send impls.
     let trait_send = traits.send.unwrap();
     let trait_copy = traits.copy;
 
-    let mut impl_content = None::<String>;
+    let mut ctx = TraitImplCxt::new(imp, fmt);
     let mut tag_all_args = Tag::NAIVE_SEND_FOR_SEND;
 
     for (arg, info) in &adt_type_params.args {
@@ -80,28 +80,25 @@ fn analyze_send(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate, ctx
         }
 
         if tag_arg.contains(Tag::NAIVE_SEND_FOR_SEND) {
-            let adt = &krate.type_decls[adt_type_params.tid];
-            let type_var_name = &adt.generics.types[*arg].name;
-            report(type_var_name, &tag_arg, &mut impl_content, imp, ctx);
+            ctx.report(arg, &tag_arg);
         }
     }
 }
 
-fn analyze_sync(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate, ctx: &FmtCtx) {
-    let mut adt_type_params = generic_params(imp, krate, ctx);
-    adt_type_params.add_trait_bounds_on_impl(imp, ctx, false);
+fn analyze_sync(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate, fmt: &FmtCtx) {
+    let mut adt_type_params = generic_params(imp, krate, fmt);
+    adt_type_params.add_trait_bounds_on_impl(imp, fmt, false);
 
     for f in krate.fun_decls.iter() {
         adt_type_params.ownership_of_type_var_on_api(f);
     }
-    // dbg!(&adt_type_params);
 
     // There must be Sync trait for Sync impls.
     let trait_sync = traits.sync.unwrap();
     let trait_send = traits.send;
     let trait_copy = traits.copy;
 
-    let mut impl_content = None::<String>;
+    let mut ctx = TraitImplCxt::new(imp, fmt);
     let mut tag_all_args = adt_type_params.default_tag_for_all_args();
 
     for (arg, info) in &adt_type_params.args {
@@ -125,28 +122,53 @@ fn analyze_sync(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate, ctx
         }
 
         if !tag_arg.is_empty() {
-            let adt = &krate.type_decls[adt_type_params.tid];
-            let type_var_name = &adt.generics.types[*arg].name;
-            report(type_var_name, &tag_arg, &mut impl_content, imp, ctx);
+            ctx.report(arg, &tag_arg);
         }
     }
 }
 
-fn report(
-    type_var_name: &str,
-    tag_arg: &Tag,
-    impl_content: &mut Option<String>,
-    imp: &TraitImpl,
-    ctx: &FmtCtx,
-) {
-    let impl_str = &**impl_content.get_or_insert_with(|| {
-        imp.item_meta
-            .source_text
-            .clone()
-            .unwrap_or_else(|| imp.fmt_with_ctx(ctx))
-    });
-    println!(
-        "\x1b[1m{impl_str}\x1b[0m\n╰───── \
-        `\x1b[37;41m{type_var_name}\x1b[0m` doesn't meet \x1b[37;41m{tag_arg:?}\x1b[0m\n",
-    );
+struct TraitImplCxt<'a, 'b> {
+    imp: &'a TraitImpl,
+    fmt: &'b FmtCtx<'b>,
+    adt_type_params_on_impl: Option<&'a Vector<TypeVarId, Ty>>,
+    impl_content: Option<String>,
+}
+
+impl<'a, 'b> TraitImplCxt<'a, 'b> {
+    fn new(imp: &'a TraitImpl, fmt: &'b FmtCtx) -> Self {
+        let (adt_type_params_on_impl, impl_content) = Default::default();
+        Self {
+            imp,
+            fmt,
+            adt_type_params_on_impl,
+            impl_content,
+        }
+    }
+
+    /// Get type var name on the impl.
+    fn get_type_var_name(&mut self, arg: &TypeVarId) -> &'a str {
+        let type_vars = self.adt_type_params_on_impl.get_or_insert_with(|| {
+            let this = self_type(self.imp, self.fmt);
+            &this.as_adt().unwrap().1.types
+        });
+        let pos = arg.raw();
+        let impl_type_var_id = *type_vars[pos].as_type_var().unwrap();
+        &self.imp.generics.types[impl_type_var_id].name
+    }
+
+    fn report(&mut self, arg: &TypeVarId, tag_arg: &Tag) {
+        let type_var_name = self.get_type_var_name(arg);
+        let impl_str = self.get_or_init_impl_content();
+        eprintln!(
+            "\x1b[1m{impl_str}\x1b[0m\n╰───── \
+            `\x1b[37;41m{type_var_name}\x1b[0m` doesn't meet \x1b[37;41m{tag_arg:?}\x1b[0m\n",
+        );
+    }
+
+    fn get_or_init_impl_content(&mut self) -> &str {
+        self.impl_content.get_or_insert_with(|| {
+            let source_text = self.imp.item_meta.source_text.clone();
+            source_text.unwrap_or_else(|| self.imp.fmt_with_ctx(self.fmt))
+        })
+    }
 }
