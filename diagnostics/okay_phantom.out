@@ -1,0 +1,14 @@
+[1munsafe impl<'a, A: Send, B, C> Send for Atom1<'a, A, B, C> {}[0m
+╰───── `[37;41mB[0m` doesn't meet [37;41mTag(NAIVE_SEND_FOR_SEND)[0m
+
+[1munsafe impl<'a, A: Send, B, C> Send for Atom1<'a, A, B, C> {}[0m
+╰───── `[37;41mC[0m` doesn't meet [37;41mTag(NAIVE_SEND_FOR_SEND)[0m
+
+[1munsafe impl<'a, A: Sync, B, C> Sync for Atom1<'a, A, B, C> {}[0m
+╰───── `[37;41mA[0m` doesn't meet [37;41mTag(API_SEND_FOR_SYNC)[0m
+
+[1munsafe impl<'a, A: Sync, B, C> Sync for Atom1<'a, A, B, C> {}[0m
+╰───── `[37;41mB[0m` doesn't meet [37;41mTag(API_SYNC_FOR_SYNC)[0m
+
+[1munsafe impl<'a, A: Sync, B, C> Sync for Atom1<'a, A, B, C> {}[0m
+╰───── `[37;41mC[0m` doesn't meet [37;41mTag(API_SEND_FOR_SYNC)[0m
