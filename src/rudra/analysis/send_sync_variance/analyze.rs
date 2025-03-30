@@ -104,18 +104,21 @@ impl<'a, 'b> TraitImplCxt<'a, 'b> {
     }
 
     /// Get type var name on the impl.
-    fn get_type_var_name(&mut self, arg: &TypeVarId) -> &'a str {
+    fn get_type_var_name(&mut self, arg: &TypeVarId) -> Option<&'a str> {
         let type_vars = self.adt_type_params_on_impl.get_or_insert_with(|| {
             let this = self_type(self.imp, self.fmt);
             &this.as_adt().unwrap().1.types
         });
         let pos = arg.raw();
-        let impl_type_var_id = *type_vars[pos].as_type_var().unwrap();
-        &self.imp.generics.types[impl_type_var_id].name
+        // There may be a concrete type on type param position.
+        let impl_type_var_id = *type_vars[pos].as_type_var()?;
+        Some(&self.imp.generics.types[impl_type_var_id].name)
     }
 
     fn report(&mut self, arg: &TypeVarId, tag_arg: &Tag) {
-        let type_var_name = self.get_type_var_name(arg);
+        let Some(type_var_name) = self.get_type_var_name(arg) else {
+            return;
+        };
         let impl_str = self.get_or_init_impl_content();
         eprintln!(
             "\x1b[1m{impl_str}\x1b[0m\n╰───── \
