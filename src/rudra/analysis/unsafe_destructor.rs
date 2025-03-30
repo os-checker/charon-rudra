@@ -89,8 +89,8 @@ fn report(krate: &TranslatedCrate, f: FunDeclId, stmt: &Statement) {
     let fun = &krate.fun_decls[f];
 
     // drop fn span
-    let mut color_span = ColorSpan::new(krate, fun.item_meta.span)
-        .expect("Failed to construct colored span {span:?}");
+    let mut color_span =
+        ColorSpan::new(krate, fun.item_meta.span).expect("Failed to construct colored span");
     // unsafe call span
     color_span.add_sub_span(Color::Red, stmt.span);
     rudra_report(Report::with_color_span(
