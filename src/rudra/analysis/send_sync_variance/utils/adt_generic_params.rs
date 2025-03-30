@@ -74,8 +74,14 @@ impl AdtGenericParams {
         AdtGenericParams { tid, args }
     }
 
-    pub fn add_trait_bounds_on_impl(&mut self, imp: &TraitImpl, ctx: &FmtCtx, send: bool) {
-        for (adt_type_var, trait_id) in trait_bounds_on_a_trait_impl(imp, ctx) {
+    pub fn add_trait_bounds_on_impl(
+        &mut self,
+        imp: &TraitImpl,
+        krate: &TranslatedCrate,
+        ctx: &FmtCtx,
+        send: bool,
+    ) {
+        for (adt_type_var, trait_id) in trait_bounds_on_a_trait_impl(imp, krate, ctx) {
             let type_var = self.args.get_mut(&adt_type_var).unwrap();
             if send {
                 &mut type_var.send_impl_trait_bounds
