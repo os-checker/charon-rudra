@@ -115,7 +115,7 @@ impl<'a, 'b> TraitImplCxt<'a, 'b> {
         let impl_str = self.get_or_init_impl_content();
         eprintln!(
             "\x1b[1m{impl_str}\x1b[0m\n╰───── \
-            `\x1b[37;41m{type_var_name}\x1b[0m` doesn't meet \x1b[37;41m{tag_arg:?}\x1b[0m\n",
+            `\x1b[31;1m{type_var_name}\x1b[0m` doesn't meet \x1b[31;1m{tag_arg:?}\x1b[0m\n",
         );
     }
 
