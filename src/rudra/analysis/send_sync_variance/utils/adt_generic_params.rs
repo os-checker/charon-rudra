@@ -60,15 +60,16 @@ impl AdtGenericParams {
 
         adt_trait_bounds(adt, &mut args);
 
+        // NOTE: https://github.com/os-checker/charon-rudra/issues/8
         // type params ownership behaviors from adt decl
-        for field in fields(&adt.kind) {
-            let mut v = vec![];
-            ownership_behavior(field.ty.kind(), &mut v, &mut false);
-            for (type_var_id, flag) in v {
-                let info = &mut args.get_mut(&type_var_id).unwrap();
-                info.update_ownership_behavior(flag);
-            }
-        }
+        // for field in fields(&adt.kind) {
+        //     let mut v = vec![];
+        //     ownership_behavior(field.ty.kind(), &mut v, &mut false);
+        //     for (type_var_id, flag) in v {
+        //         let info = &mut args.get_mut(&type_var_id).unwrap();
+        //         info.update_ownership_behavior(flag);
+        //     }
+        // }
 
         AdtGenericParams { tid, args }
     }
@@ -171,13 +172,13 @@ fn adt_trait_bounds(adt: &TypeDecl, args: &mut Args) {
 }
 
 /// Fields in adt. For enums, all fields in each variant are collected.
-fn fields(ty_decl: &TypeDeclKind) -> Vec<&Field> {
-    match ty_decl {
-        TypeDeclKind::Struct(v) | TypeDeclKind::Union(v) => v.iter().collect(),
-        TypeDeclKind::Enum(e) => e.iter().flat_map(|e| e.fields.iter()).collect(),
-        _ => vec![],
-    }
-}
+// fn fields(ty_decl: &TypeDeclKind) -> Vec<&Field> {
+//     match ty_decl {
+//         TypeDeclKind::Struct(v) | TypeDeclKind::Union(v) => v.iter().collect(),
+//         TypeDeclKind::Enum(e) => e.iter().flat_map(|e| e.fields.iter()).collect(),
+//         _ => vec![],
+//     }
+// }
 
 fn ownership_behavior(
     ty_kind: &TyKind,
