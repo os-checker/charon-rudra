@@ -1,0 +1,5 @@
+[1munsafe impl<P: Send, Q: Send> Sync for Channel<P, Q> {}[0m
+╰───── `[37;41mP[0m` doesn't meet [37;41mTag(API_SYNC_FOR_SYNC)[0m
+
+[1munsafe impl<P: Send, Q: Send> Sync for Channel<P, Q> {}[0m
+╰───── `[37;41mQ[0m` doesn't meet [37;41mTag(API_SYNC_FOR_SYNC)[0m
