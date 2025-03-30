@@ -58,8 +58,10 @@ impl ImplToAdtTypeVar {
     pub fn fill(&mut self, adt_generics: &GenericArgs) {
         self.inner.clear();
         for (adt_type_var_id, impl_type_var) in adt_generics.types.iter().enumerate() {
-            let key = *impl_type_var.as_type_var().unwrap();
-            self.insert(key, adt_type_var_id);
+            // Skip specific adt types on adt's generic param position.
+            if let Some(&key) = impl_type_var.as_type_var() {
+                self.insert(key, adt_type_var_id);
+            }
         }
     }
 }
