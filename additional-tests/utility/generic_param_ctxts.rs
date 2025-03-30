@@ -1,3 +1,9 @@
+/*!
+```rudra-test
+test_type = "normal"
+expected_analyzers = ["SendSyncVariance"]
+```
+!*/
 #![allow(dead_code)]
 
 // B.index = 1

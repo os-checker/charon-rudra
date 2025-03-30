@@ -1,5 +1,11 @@
-use std::marker::PhantomData;
+/*!
+```rudra-test
+test_type = "normal"
+expected_analyzers = ["SendSyncVariance"]
+```
+!*/
 use std::cell::UnsafeCell;
+use std::marker::PhantomData;
 
 pub struct Opaque(PhantomData<UnsafeCell<*mut ()>>);
 
