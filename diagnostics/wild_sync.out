@@ -1,0 +1,7 @@
+[1munsafe impl<P: Send, Q> Sync for Atom<P, Q>
+where
+    Q: Copy,
+    P: Sync,
+{
+}[0m
+╰───── `[31;1mQ[0m` doesn't meet [31;1mTag(NAIVE_SYNC_FOR_SYNC)[0m
