@@ -125,7 +125,7 @@ impl AdtGenericParams {
     pub fn default_tag_for_all_args(&self) -> Tag {
         self.args
             .iter()
-            .fold(Tag::empty(), |acc, (_, info)| info.tag(acc))
+            .fold(Tag::NAIVE_SYNC_FOR_SYNC, |acc, (_, info)| info.tag(acc))
     }
 }
 

@@ -56,13 +56,13 @@ pub fn analyze_sync(imp: &TraitImpl, traits: &TraitDid, krate: &TranslatedCrate,
     let mut tag_all_args = adt_type_params.default_tag_for_all_args();
 
     for (arg, info) in &adt_type_params.args {
-        let mut tag_arg = info.tag(Tag::empty());
+        let mut tag_arg = info.tag(Tag::NAIVE_SYNC_FOR_SYNC);
 
         let iter = info.adt_trait_bounds.iter();
         let trait_bounds = iter.chain(&info.sync_impl_trait_bounds);
         for &trait_ in trait_bounds {
             if trait_ == trait_sync {
-                let tag = Tag::API_SYNC_FOR_SYNC;
+                let tag = Tag::NAIVE_SYNC_FOR_SYNC | Tag::API_SYNC_FOR_SYNC;
                 tag_arg.remove(tag);
                 tag_all_args.remove(tag);
             }
