@@ -1,4 +1,6 @@
 [
+    "tests/additional-tests/okay_phantom_with_apis.rs",
+    "tests/additional-tests/sync-with-same-tpye-param-on-adt-type.rs",
     "tests/panic_safety/insertion_sort.rs",
     "tests/panic_safety/order_safe.rs",
     "tests/panic_safety/order_safe_if.rs",
