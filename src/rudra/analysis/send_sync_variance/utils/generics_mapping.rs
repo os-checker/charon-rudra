@@ -55,8 +55,9 @@ impl ImplToAdtTypeVar {
 
     /// Fill the mapping from impl/fn sig generic types to adt type generic types.
     /// adt_generics is from a impl/fn sig, not from type decl.
+    ///
+    /// This only adds generics to the mapping, and dones't clear the mapping.
     pub fn fill(&mut self, adt_generics: &GenericArgs) {
-        self.inner.clear();
         for (adt_type_var_id, impl_type_var) in adt_generics.types.iter().enumerate() {
             // Skip specific adt types on adt's generic param position.
             if let Some(&key) = impl_type_var.as_type_var() {
@@ -64,6 +65,10 @@ impl ImplToAdtTypeVar {
             }
         }
     }
+
+    // pub fn clear(&mut self) {
+    //     self.inner.clear();
+    // }
 }
 
 /// TypeVarId is in adt decl's order.
